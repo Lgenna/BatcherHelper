@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="otherPrimary">#e84c3d</color>
+    <color name="otherPrimaryDark">#b53c31</color>
+    <color name="lightGray">#EEEEEE</color>
+    <color name="notAsLightGray">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="trueTransparent">#00000000</color>
+    <color name="transparent">#50000000</color>
+    <color name="transparentGreen">#5045A00E</color>
+    <color name="transparentClear">#00000000</color>
+    <color name="ic_launcher_background">#b8b8b8</color>
+    <color name="standard_button">#d7d7d7</color>
+    <color name="grayed_out_button">#e7e7e7</color>
+</resources>

@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">BatcherHelper</string>
+    <string name="tab_text_1">TP/TKN</string>
+    <string name="tab_text_2">Cyanide</string>
+    <string name="tubes_available_question"># tubes available:</string>
+    <string name="num_water_mdls_question"># water MDL\'s:</string>
+    <string name="num_soil_mdls_question"># soil MDL\'s :</string>
+    <string name="num_shared_question"># shared samples</string>
+    <string name="num_tp_question"># TP samples:</string>
+    <string name="num_tkn_question"># TKN samples:</string>
+    <string name="curve_question">Does this batch need a curve?</string>
+    <string name="extra_tubes_needed_question">Extra tubes needed:</string>
+    <string name="num_water_pts_question"># water PT\'s:</string>
+    <string name="num_soil_pts_question"># soil PT\'s:</string>
+    <string name="current_batch_size">Current batch size: </string>
+    <string name="num_tubes_left">Number of tubes left: </string>
+    <string name="letter_of_the_day"> x </string>
+    <string name="sample_text">Sample Text</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="initialZero">0</string>
+</resources>
