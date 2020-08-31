@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import personal.batcherhelper.BatchItem;
@@ -79,6 +80,10 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         vNumSoilMDLs.setOnClickListener(this);
         vNeedsCurve = view.findViewById(R.id.isCurveNeeded);
         vNeedsCurve.setOnClickListener(this);
+        vNumTubesLeft = view.findViewById(R.id.numOfTubesLeft);
+
+        batchLogic.performLogic();
+
 
 //        final TextView textView = root.findViewById(R.id.section_label);
 //        pageViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -88,12 +93,12 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 //            }
 //        });
 
+
+
         initData();
         initRecyclerView();
 
         getBatchSize();
-
-//        batchLogic.runner();
 
         return view;
     }
@@ -106,18 +111,19 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
         int[] batchQC = batchLogic.getBatchQC();
         int[] batchSamples = batchLogic.getBatchSamples();
-        ArrayList<String> batchItemNames = new ArrayList<String>();
+//        ArrayList<String> batchItemNames = new ArrayList<>();
 
-        BatchItemNames batchItemName = new BatchItemNames();
-        batchItemName.setmItem(itemName);
+//        BatchItemNames batchItemName = new BatchItemNames();
+//        batchItemName.setmItem(itemName);
 
-        for (BatchItem item : mBatchItems) {
-            batchItemNames.add(item.getmItem());
-        }
+//        for (BatchItem item : mBatchItems) {
+//            batchItemNames.add(item.getmItem());
+//        }
 
-        if (!batchItemNames.contains(itemName)) { // item was not present
+//        if (!batchItemNames.contains(itemName)) { // item was not present
+//
+//            System.out.println("item name not found : " + itemName);
 
-            System.out.println("item name not found : " + itemName);
             BatchItem item = new BatchItem();
 
             item.setmItem(itemName);
@@ -126,20 +132,20 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             item.setmIndexInArray(indexInArray);
 
             mBatchItems.add(item);
-
-//            mBatchItemNames.add(batchItemName);
-        } else { // item was present, now time to update it
-            int position = batchItemNames.indexOf(itemName);
-            BatchItem updateThis = mBatchItems.get(position);
-
-            if (updateThis.getmIsQC()) {
-                updateThis.setmCount(batchQC[indexInArray]);
-            } else {
-                updateThis.setmCount(batchSamples[indexInArray]);
-            }
-
-            mBatchItems.set(position, updateThis);
-        }
+//
+////            mBatchItemNames.add(batchItemName);
+//        } else { // item was present, now time to update it
+//            int position = batchItemNames.indexOf(itemName);
+//            BatchItem updateThis = mBatchItems.get(position);
+//
+//            if (updateThis.getmIsQC()) {
+//                updateThis.setmCount(batchQC[indexInArray]);
+//            } else {
+//                updateThis.setmCount(batchSamples[indexInArray]);
+//            }
+//
+//            mBatchItems.set(position, updateThis);
+//        }
     }
 
     private void getBatchSize() {
@@ -152,16 +158,13 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         iCurrentBatchSize.setText(String.valueOf(batchSize));
     }
 
-
-
-    String[] sBatchSamples = new String[]{"WhatDidYouDo", "Water MDL", "Soil MDL"
-            , "Water PT", "Soil PT", "Shared", "TP", "TKN", "Extra Needed"};
-    String[] sBatchQC = new String[]{"Blank", "CCV", "Curve Points", "MS", "MSD", "LCS"};
+    String[] sBatchSamples = batchLogic.getBatchSamplesNames();
+    String[] sBatchQC = batchLogic.getBatchQCNames();
 
     boolean needsCurve;
 
     TextView vNumTubesAvailable, vNumExtra, vNumShared, vNumTP, vNumTKN,
-            vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs;
+            vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs, vNumTubesLeft;
     CheckBox vNeedsCurve;
 
     private void initData() {
@@ -171,6 +174,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
         int[] batchQC = batchLogic.getBatchQC();
         int[] batchSamples = batchLogic.getBatchSamples();
+
+        mBatchItems.clear(); // wipe before adding new data, crude and easy solution
 
         for (int i = 0; i < batchQC.length; i++) {
             // go through each type of item in the array
@@ -222,18 +227,25 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     private void numberWheelDialog(int min, int max, int valueIndex, TextView calledView) {
 
 
-        int[] batchQC = batchLogic.getBatchQC();
+//        int[] batchQC = batchLogic.getBatchQC();
+
+        // get most recent values stored in batchSamples array
         int[] batchSamples = batchLogic.getBatchSamples();
         final Dialog dialog = new Dialog(context);
 
         calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_blue_underline));
         dialog.setContentView(R.layout.fragment_number_picker);
-        dialog.setCancelable(false);
+        // add confirm and cancel buttons
         Button confirm = dialog.findViewById(R.id.confirm);
         Button cancel = dialog.findViewById(R.id.cancel);
+        // make it so the only way to close the view it tapping on the "cancel" button
+        dialog.setCancelable(false);
         final NumberPicker numberPicker = dialog.findViewById(R.id.numberPicker);
+        // set the min value to the minimum number of samples you can use
         numberPicker.setMinValue(min);
+        // set the max to the maximum number of samples you can have without going over the number of tubes
         numberPicker.setMaxValue(max);
+        // set the current value of the number wheel to the last stored number
         numberPicker.setValue(batchSamples[valueIndex]);
         numberPicker.setWrapSelectorWheel(false);
         numberPicker.setOnValueChangedListener(this);
@@ -245,9 +257,13 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
             calledView.setText(String.valueOf(confirmedValue));
 
-            batchSamples[valueIndex] = confirmedValue;
 
-            batchLogic.runner();
+            batchLogic.setBatchSamplesValue(valueIndex, confirmedValue);
+//            batchSamples[valueIndex] = confirmedValue;
+//            batchLogic.setBatchSamples(batchSamples);
+
+            vNumTubesLeft.setText(String.valueOf(batchLogic.performLogic())); // perform logic and set the number of tubes left
+
             initData();
             batchViewCustomAdapter.notifyDataSetChanged();
 
@@ -259,6 +275,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             dialog.dismiss(); // dismiss the dialog
         });
         dialog.show();
+
     }
 
 //    private void computeSamples() {
@@ -282,35 +299,32 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
         switch (view.getId()) {
             case R.id.numTubesAvailable:
-                numberWheelDialog(0, 50, 0, vNumTubesAvailable);
+                numberWheelDialog(0, 50, 999, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
-                numberWheelDialog(0, 50, 1, vNumWaterMDLs);
+                numberWheelDialog(0, 50, 0, vNumWaterMDLs);
                 break;
             case R.id.numSoilMDLs:
-                numberWheelDialog(0, 50, 2, vNumSoilMDLs);
+                numberWheelDialog(0, 50, 999, vNumSoilMDLs);
                 break;
             case R.id.numWaterPTs:
-                numberWheelDialog(0, 50, 3, vNumWaterPTs);
+                numberWheelDialog(0, 50, 1, vNumWaterPTs);
                 break;
             case R.id.numSoilPTs:
-                numberWheelDialog(0, 50, 4, vNumSoilPTs);
+                numberWheelDialog(0, 50, 999, vNumSoilPTs);
                 break;
             case R.id.numShared:
-                numberWheelDialog(0, 50, 5, vNumShared);
+                numberWheelDialog(0, 50, 2, vNumShared);
                 break;
-
             case R.id.numTP:
-                numberWheelDialog(0, 50, 6, vNumTP);
-//                numTP = Integer.parseInt(vNumTP.getText().toString());
-//                itemAdder("TP", false, numTP);
-                break;
+                numberWheelDialog(0, 50, 3, vNumTP);
 
+                break;
             case R.id.numTKN:
-                numberWheelDialog(0, 50, 7, vNumTKN);
+                numberWheelDialog(0, 50, 4, vNumTKN);
                 break;
             case R.id.numExtra:
-                numberWheelDialog(0, 50, 8, vNumExtra);
+                numberWheelDialog(0, 50, 5, vNumExtra);
                 break;
         }
     }

@@ -43,10 +43,9 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/num_soil_mdls_question"
-            app:layout_constraintStart_toEndOf="@+id/textView2"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/numTubesAvailable" />
 
         <TextView
@@ -127,6 +126,7 @@
             android:padding="8dp"
             android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/isCurveNeeded" />
 
@@ -180,17 +180,17 @@
             android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/num_soil_pts_question"
-            app:layout_constraintStart_toEndOf="@+id/textView2"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/numSoilMDLs" />
 
         <TextView
             android:id="@+id/numSoilPTs"
+            style="@style/fakeTextBox"
             android:layout_width="75dp"
             android:layout_height="35dp"
-            style="@style/fakeTextBox"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textView10"
             app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
