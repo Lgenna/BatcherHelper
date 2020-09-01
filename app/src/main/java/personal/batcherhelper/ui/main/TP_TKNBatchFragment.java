@@ -247,10 +247,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             calledView.setText(String.valueOf(confirmedValue));
 
 
+            // store the confirmed value within its valueIndex in the array
             batchLogic.setBatchSamplesValue(valueIndex, confirmedValue);
-//            batchSamples[valueIndex] = confirmedValue;
-//            batchLogic.setBatchSamples(batchSamples);
-
 
             vNumTubesLeft.setText(String.valueOf(batchLogic.performLogic())); // perform logic and set the number of tubes left
 
@@ -268,21 +266,6 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
     }
 
-//    private void computeSamples() {
-//        int numShared = batchSamples[5];
-//        int numMS = batchQC[3];
-//
-//        while (numShared > 0) {
-//            numMS++;
-//            numShared -= 10;
-//        }
-//
-//
-//
-//
-//        System.out.println("numShared: " + numShared);
-//        System.out.println("numMS: " + numMS);
-//    }
 
     @Override
     public void onClick(View view) {
@@ -291,21 +274,24 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
         switch (view.getId()) {
             case R.id.numTubesAvailable:
-                numberWheelDialog(0, 50, 999, vNumTubesAvailable);
+//                numberWheelDialog(0, 50, 999, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
-                numberWheelDialog(0, 50, 0, vNumWaterMDLs);
+//                numberWheelDialog(0, 50, 0, vNumWaterMDLs);
                 break;
             case R.id.numSoilMDLs:
-                numberWheelDialog(0, 50, 999, vNumSoilMDLs);
+//                numberWheelDialog(0, 50, 999, vNumSoilMDLs);
                 break;
             case R.id.numWaterPTs:
-                numberWheelDialog(0, 50, 1, vNumWaterPTs);
+//                numberWheelDialog(0, 50, 1, vNumWaterPTs);
                 break;
             case R.id.numSoilPTs:
-                numberWheelDialog(0, 50, 999, vNumSoilPTs);
+//                numberWheelDialog(0, 50, 999, vNumSoilPTs);
                 break;
             case R.id.numShared:
+                // only allow the user to enter in a value IF they have both TP and TKN already
+                //  entered in, this helps reduce problems when generating the max number of
+                //  samples
                 if (batchSamples[3] != 0 && batchSamples[4] != 0) {
                     numberWheelDialog(0, (batchSamples[3] + batchSamples[4]), 2, vNumShared);
                 }
@@ -317,7 +303,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 numberWheelDialog(0, batchLogic.findMaxAllowedSample(50, false), 4, vNumTKN);
                 break;
             case R.id.numExtra:
-                numberWheelDialog(0, 50, 5, vNumExtra);
+//                numberWheelDialog(0, 50, 5, vNumExtra);
                 break;
         }
     }

@@ -204,8 +204,8 @@ public class BatchLogic {
 
         // get soil QC
         SoilQC returnedSoilQC = findSoilQC(totalSoils);
-        int soilBlank = returnedSoilQC.getSoilBlank();
-        int soilLCS = returnedSoilQC.getSoilLCS();
+//        int soilBlank = returnedSoilQC.getSoilBlank();
+//        int soilLCS = returnedSoilQC.getSoilLCS();
 
         // finds MS and MSD needed for soils
 //        int soilNeededMS = findExtraMS(soilTP, soilTKN); //  CHANGE TO ARRAY CALLS
@@ -234,8 +234,8 @@ public class BatchLogic {
             batchQC[4] = waterNeededMS;
             batchQC[5] = waterNeededMSD;
 
-            batchQC[6] = soilBlank;
-            batchQC[7] = soilLCS;
+//            batchQC[6] = soilBlank;
+//            batchQC[7] = soilLCS;
 //            batchQC[8] = soilNeededMS;
 //            batchQC[9] = soilNeededMSD;
 
