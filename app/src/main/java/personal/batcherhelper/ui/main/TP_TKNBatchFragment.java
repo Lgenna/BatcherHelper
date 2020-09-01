@@ -84,17 +84,6 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
         batchLogic.performLogic();
 
-
-//        final TextView textView = root.findViewById(R.id.section_label);
-//        pageViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
-
-
-
         initData();
         initRecyclerView();
 
@@ -262,6 +251,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 //            batchSamples[valueIndex] = confirmedValue;
 //            batchLogic.setBatchSamples(batchSamples);
 
+
             vNumTubesLeft.setText(String.valueOf(batchLogic.performLogic())); // perform logic and set the number of tubes left
 
             initData();
@@ -297,6 +287,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
 
+        int[] batchSamples = batchLogic.getBatchSamples();
+
         switch (view.getId()) {
             case R.id.numTubesAvailable:
                 numberWheelDialog(0, 50, 999, vNumTubesAvailable);
@@ -314,14 +306,15 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 numberWheelDialog(0, 50, 999, vNumSoilPTs);
                 break;
             case R.id.numShared:
-                numberWheelDialog(0, 50, 2, vNumShared);
+                if (batchSamples[3] != 0 && batchSamples[4] != 0) {
+                    numberWheelDialog(0, (batchSamples[3] + batchSamples[4]), 2, vNumShared);
+                }
                 break;
             case R.id.numTP:
-                numberWheelDialog(0, 50, 3, vNumTP);
-
+                numberWheelDialog(0, batchLogic.findMaxAllowedSample(50, true), 3, vNumTP);
                 break;
             case R.id.numTKN:
-                numberWheelDialog(0, 50, 4, vNumTKN);
+                numberWheelDialog(0, batchLogic.findMaxAllowedSample(50, false), 4, vNumTKN);
                 break;
             case R.id.numExtra:
                 numberWheelDialog(0, 50, 5, vNumExtra);

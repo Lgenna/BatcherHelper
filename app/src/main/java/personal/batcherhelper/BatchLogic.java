@@ -1,11 +1,19 @@
 package personal.batcherhelper;
 
+import android.util.Log;
 import java.util.Arrays;
 
 public class BatchLogic {
 
-    // 1 MSD can supply up to 20 Water TP and 20 Water TKN,
-    //  soils are entirely separate from water but follow the same conditions.
+    private static final String TAG = "BatchLogic";
+
+    /**
+     * These public ints can be set anywhere within the program, however it is not friendly
+     *  towards general "for" loops or other general methods, therefore we edit the array
+     *  directly (even though the array was designed to be a final resting place for sample
+     *  amounts and the int's were temporary values used to check if they can fit before being
+     *  put into the array, but that's besides the point)
+     */
 
     public int waterShared = 0;
     public int waterMDL = 0;
@@ -20,20 +28,6 @@ public class BatchLogic {
     public int soilTP = 0;
     public int soilTKN = 0;
     public int soilExtra = 0;
-
-//    public int waterShared = 1;
-//    public int waterMDL = 1;
-//    public int waterPT = 0;
-//    public int waterTP = 20;
-//    public int waterTKN = 12;
-//    public int waterExtra = 0;
-//
-//    public int soilShared = 0;
-//    public int soilMDL = 0;
-//    public int soilPT = 0;
-//    public int soilTP = 0;
-//    public int soilTKN = 0;
-//    public int soilExtra = 0;
 
     public boolean isCurve = false;
     public int totalTubes = 50;
@@ -82,6 +76,7 @@ public class BatchLogic {
         return availableTubes;
     }
 
+
     public String[] getBatchSamplesNames() {
         String[] copiedArray = Arrays.copyOf(batchSamplesNames, batchSamplesNames.length);
         Arrays.setAll(copiedArray, i -> copiedArray[i].replace(" x ", ""));
@@ -94,8 +89,10 @@ public class BatchLogic {
         return copiedArray;
     }
 
-    /*
-        Prints the output of the batch in a squishy-human readable format.
+    /**
+     * Prints the output of the batch in a squishy-human readable format.
+     *
+     * Mainly for test purposes as it is designed to print only to the console
     */
     private String batchPrinter() {
 
@@ -121,63 +118,44 @@ public class BatchLogic {
         return stringy.toString();
     }
 
-    /*
-       Finds the number of MS's needed for TP/TKN samples using the larger
-        of the two analysis types
-    */
-    private int findExtraMS(int tpAmount, int tknAmount) {
-
-        boolean isTKN = false;
-        int largest = tpAmount;
-
-        // multiply TKN by 2 because TKN needs another MS for every 10 samples so double its weight
-        if((tknAmount * 2) >= tpAmount) {
-            isTKN = true;
-            largest = tknAmount * 2;
-        }
-
-        System.out.println("largest : " + largest);
-
-        // 20 TP samples per MS
-        // 10 TKN samples per MS
-        int samplesPerMS = 20;
-//        if (isTKN) samplesPerMS = 10;
-
-        int totalMSNeeded = 0;
-        if (largest > 0) {
-            totalMSNeeded++;
-            for (int i = largest; i > samplesPerMS; i -= samplesPerMS) {
-                totalMSNeeded++;
-            }
-        }
-
-        return totalMSNeeded;
-    }
-
-    /*
-       Finds the number of MSD's needed for TP/TKN samples using the larger
-        of the two analysis types
-    */
-    private int findExtraMSD(int tpAmount, int tknAmount) {
+    /**
+     * Finds the number of Spikes needed for TP/TKN samples using the larger of the two analysis
+     *  types, works for both MS and MSD, granted that isMS is true or false accordingly
+     *
+     * @param tpAmount The number of TP samples
+     * @param tknAmount The number of TKN samples
+     * @param isMS If we are currently trying to find MS or MSD
+     * @return the number of spikes needed (either MS or MSD, depending on the state of isMS)
+     */
+    private int findNeededSpikes(int tpAmount, int tknAmount, boolean isMS) {
 
         int largest = tpAmount;
-        if (tknAmount >= largest) largest = tknAmount;
 
-        int totalMSDNeeded = 0;
+        // multiply TKN by 2 because TKN needs another MS for every 10 samples, so double its weight
+        if (isMS) {
+            tknAmount *= 2;
+        }
+
+        if(tknAmount >= largest) largest = tknAmount;
+
+        int totalSpikesNeeded = 0;
         for (int i = largest; i > 0; i -= 20) {
-            totalMSDNeeded++;
+            totalSpikesNeeded++;
         }
 
-        return totalMSDNeeded;
+        return totalSpikesNeeded;
     }
 
-    /*
-      Finds Blank's and LCS's needed for soils. These have to be separate from water samples.
-
-      Granted, this should usually output 1 for both the blank and lcs,
-       but there is the slim chance there might be more than 20 soils, and
-       we dont know how to account for that, so just add another blank and lcs
-    */
+    /**
+     * Finds Blank's and LCS's needed for soils. These have to be separate from water samples.
+     *
+     *       Granted, this should usually output 1 for both the blank and lcs,
+     *        but there is the slim chance there might be more than 20 soils, and
+     *        we don't know how to account for that, so just add another blank and lcs
+     *
+     * @param sampleAmount number of soil samples
+     * @return returns a SoilQC object which stores the number of soil blanks and LCS's needed
+     */
     private SoilQC findSoilQC (int sampleAmount) {
         int soilBlank = 0, soilLCS = 0;
 
@@ -194,13 +172,10 @@ public class BatchLogic {
         return soilSample;
     }
 
-
-
-
-    /*
-      Adds everything together prior to adding data to arrays to ensure everything is
-       less than the total number of tubes available.
+    /**
+      Adds everything together before finalizing just as a precautionary measure
     */
+
     public int performLogic() {
 
         // running total of added values
@@ -214,14 +189,12 @@ public class BatchLogic {
         // check to see if there is a curve needed
         int curvePoints = 0;
         if (isCurve) {
-             curvePoints = 7;
+            curvePoints = 7;
         }
 
         // finds MS and MSD needed for waters
-        int waterNeededMS = findExtraMS(waterTpMinusShared, waterTknMinusShared);
-        int waterNeededMSD = findExtraMSD(waterTpMinusShared, waterTknMinusShared);
-
-
+        int waterNeededMS = findNeededSpikes(batchSamples[3], batchSamples[4], true);
+        int waterNeededMSD = findNeededSpikes(batchSamples[3], batchSamples[4], false);
 
         // finds the total number of soils, used later
         int totalSoils = 0;
@@ -244,7 +217,6 @@ public class BatchLogic {
         }
 
 
-
         // add the rest of the computed values
         runningTotal += waterTpMinusShared + waterTknMinusShared;
         runningTotal += batchSamples[2]; // waterShared
@@ -253,8 +225,8 @@ public class BatchLogic {
 //        runningTotal += (soilBlank + soilLCS);
 //        runningTotal += (soilNeededMS + soilNeededMSD);
 
-//        System.out.println("runningTotal : " + runningTotal);
-
+        // now check to see if all of that is greater than 0, otherwise something went wrong and
+        // there are now negative tubes available
         if ((totalTubes - runningTotal) >= 0) {
 
             batchQC[2] = curvePoints;
@@ -267,23 +239,53 @@ public class BatchLogic {
 //            batchQC[8] = soilNeededMS;
 //            batchQC[9] = soilNeededMSD;
 
-            // subtract from totalTubes (batchSamples[0])
-
             for (int value : batchQC) {
                 availableTubes -= value;
             }
 
             for (int i = 1; i < batchSamples.length; i++) {
-                availableTubes -= batchSamples[i];
+                if (i < 3 || i > 4) {
+                    availableTubes -= batchSamples[i];
+                } else {
+                    availableTubes -= (batchSamples[i] - batchSamples[2]);
+                }
             }
+
+            System.out.println(Arrays.toString(batchSamples));
 
             return availableTubes;
 
         } else {
-            System.out.println("Not enough room | Need : " + runningTotal + " > Have : " + availableTubes);
-            return -1;
+            Log.i(TAG, "Not enough room | Need : " + runningTotal + " > Have : " + availableTubes);
+            return -999;
+        }
+    }
+
+    /**
+     * Still a work in progress but theoretically this finds the maximum number of samples you can
+     *  have for a specific sample type given. This uses recursion till it generates a number less
+     *  or equal to the number of available tubes.
+     *
+     * @param maxSampleAmount the maximum number of samples you can have of that type, usually 50
+     * @param isTP temporary check to see if the given sample type is TP or TKN
+     * @return returns the maximum number of samples you can have minus needed matrix spikes and
+     *  matrix spike duplicates
+     */
+
+    public int findMaxAllowedSample(int maxSampleAmount, boolean isTP) {
+        int waterNeededMS, waterNeededMSD;
+        if (isTP) {
+            waterNeededMS = findNeededSpikes(maxSampleAmount, 0, true);
+            waterNeededMSD = findNeededSpikes(maxSampleAmount, 0, false);
+        } else {
+            waterNeededMS = findNeededSpikes(0, maxSampleAmount, true);
+            waterNeededMSD = findNeededSpikes(0, maxSampleAmount, false);
         }
 
-
+        if ((waterNeededMS + waterNeededMSD + maxSampleAmount) <= availableTubes) {
+            return maxSampleAmount;
+        } else {
+            return findMaxAllowedSample(maxSampleAmount - 1, isTP);
+        }
     }
 }
