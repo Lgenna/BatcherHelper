@@ -25,8 +25,6 @@ public class BatchViewCustomAdapter extends RecyclerView.Adapter<BatchViewCustom
         this.mBatchItems = mBatchItems;
     }
 
-
-
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_general, viewGroup, false);
         return new CustomViewHolder(view);
@@ -38,7 +36,6 @@ public class BatchViewCustomAdapter extends RecyclerView.Adapter<BatchViewCustom
         viewHolder.batchItem.setText(mBatchItems.get(position).getmItem());
         if (mBatchItems.get(position).getmIsQC()) {
             // don't draw the button when its qc, the user should not be able to remove qc items, only the system
-//                    ContextCompat.getDrawable(getContext(), R.drawable.custom_button);
             viewHolder.removeItem.setVisibility(View.INVISIBLE);
             viewHolder.removeItem.setEnabled(false);
         }
@@ -48,26 +45,20 @@ public class BatchViewCustomAdapter extends RecyclerView.Adapter<BatchViewCustom
 
             notifyItemRemoved(position);
 
-
             mBatchItems.remove(position);
 
-
             notifyItemRangeChanged(position, getItemCount());
+            
+            // Objects.requireNonNull(getActivity()).runOnUiThread(() -> getBatchSize());
 
-            try {
-//                Objects.requireNonNull(getActivity()).runOnUiThread(() -> getBatchSize());
-            } catch (NullPointerException e) {
-                System.out.println("NullPointerException: " + e);
-            }
-//                    notifyDataSetChanged();
         });
     }
 
 
     @Override
     public int getItemCount() {
-                return mBatchItems.size();
-            }
+        return mBatchItems.size();
+    }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 
