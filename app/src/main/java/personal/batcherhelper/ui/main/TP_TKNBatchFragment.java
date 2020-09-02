@@ -35,24 +35,31 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     private static final String TAG = "TP_TKNBatchFragment";
 
     private View view;
-    Context context;
+    private Context context;
 
-    BatchLogic batchLogic = new BatchLogic();
+    // Keep in mind that batchLogic stores all of the arrays and their contents, this
+    //  can be considered a design flaw...
+    private BatchLogic batchLogic = new BatchLogic();
 
-    // get sample names and store it because it never changes, sample amounts do however
-    String[] sBatchSamples = batchLogic.getBatchSamplesNames();
-    String[] sBatchQC = batchLogic.getBatchQCNames();
+    // get sample names and store it because they never change, however
+    //  sample amounts do, so grab those whenever needed.
+    private String[] sBatchSamples = batchLogic.getBatchSamplesNames();
+    private String[] sBatchQC = batchLogic.getBatchQCNames();
 
-    boolean needsCurve;
+    private boolean needsCurve;
 
-    TextView vNumTubesAvailable, vNumExtra, vNumShared, vNumTP, vNumTKN,
+    private TextView vNumTubesAvailable, vNumExtra, vNumShared, vNumTP, vNumTKN,
             vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs, vNumTubesLeft,
             vCurrentBatchSize;
-    CheckBox vNeedsCurve;
+    private CheckBox vNeedsCurve;
 
+    // recycler view adapter
+    private BatchViewCustomAdapter batchViewCustomAdapter;
+    
     // items for recycler View
-    ArrayList<BatchItem> mBatchItems = new ArrayList<>();
-
+    private ArrayList<BatchItem> mBatchItems = new ArrayList<>();
+    
+    
     public static TP_TKNBatchFragment newInstance() {
         TP_TKNBatchFragment fragment = new TP_TKNBatchFragment();
         return fragment;
@@ -64,8 +71,6 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         context = getContext();
     }
 
-
-
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -73,8 +78,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         view = inflater.inflate(R.layout.fragment_tp_tkn_batch, container, false);
 
         batchLogic.performLogic();
-//        int[] localBatchSamples = batchLogic.getBatchSamples();
-
+        
         vNumTubesAvailable = view.findViewById(R.id.numTubesAvailable);
         vNumTubesAvailable.setOnClickListener(this); // calling onClick() method
         vNumExtra = view.findViewById(R.id.numExtra);
@@ -103,8 +107,6 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         initData();
         initRecyclerView();
 
-//        getBatchSize();
-
         return view;
     }
 
@@ -122,45 +124,44 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         mBatchItems.add(item);
     }
 
+    /**
+     *  This method makes calls to the itemAdder method for each 
+     *   item that's in the batchQC and batchSamples arrays.
+     *
+     *  The Log.i() commands are commented out since they kindof spam the console and are not
+     *   terribly necessary.
+     */
+    
     private void initData() {
-
-        // this adds items to the sample and qc arrayLists which get added to the recycler
-        //  view...
 
         int[] batchQC = batchLogic.getBatchQC();
         int[] batchSamples = batchLogic.getBatchSamples();
 
-        mBatchItems.clear(); // wipe before adding new data, crude and easy solution
+        mBatchItems.clear(); // wipe before adding new data, easy solution to avoid duplicates
 
+        // go through each type of item in the array
         for (int i = 0; i < batchQC.length; i++) {
-            // go through each type of item in the array
+            // if its value is greater than 0, add it
             if (batchQC[i] > 0) {
-                // if its value is greater than 0, add it
-                // it should... SHOULD, avoid adding the same value twice... should...
-
                 itemAdder(sBatchQC[i], true, batchQC[i], i);
 //                Log.i(TAG, "Added " + sBatchQC[i] + " to the ArrayList");
             }
         }
 
         for (int i = 1; i < batchSamples.length - 1; i++) {
-            // go through each type of item in the array
             if (batchSamples[i] > 0) {
-                // if its value is greater than 0, add it
-                // it should... SHOULD, avoid adding the same value twice... should...
-
-                if (i == 6 || i == 7) { // special case to subtract the shared samples from TP and TKN
+                // special case to subtract the shared samples from TP and TKN
+                if (i == 6 || i == 7) {
                     itemAdder(sBatchSamples[i], false, batchSamples[i] - batchSamples[5], i);
-//                    Log.i(TAG, "Added " + sBatchQC[i] + " to the ArrayList");
+//                    Log.i(TAG, "Added " + sBatchSamples[i] + " to the ArrayList");
                 } else {
                     itemAdder(sBatchSamples[i], false, batchSamples[i], i);
-//                  Log.i(TAG, "Added " + sBatchQC[i] + " to the ArrayList");
+//                  Log.i(TAG, "Added " + sBatchSamples[i] + " to the ArrayList");
                 }
             }
         }
     }
 
-    BatchViewCustomAdapter batchViewCustomAdapter;
 
     private void initRecyclerView() {
         RecyclerView mRecyclerView = view.findViewById(R.id.currentBatchView);
@@ -172,20 +173,23 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         mRecyclerView.setAdapter(batchViewCustomAdapter);
     }
 
-
-    // is onValueChange required within the class? If yes, what does it do?
-//    int mostRecentNumber;
-
+    /**
+     * Not used but required method, it gets called whenever the value is updated from a numberPicker, eg. it 
+     *  gets called whenever the user is scrolling through instead of only when the user picks a value, why
+     *  you would want this, we will never know.
+     */
     @Override
-    public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-//        mostRecentNumber = i1;
-    }
+    public void onValueChange(NumberPicker numberPicker, int i, int i1) { }
 
-    private void numberWheelDialog(int min, int max, int valueIndex, TextView calledView) {
+    private void numberWheelDialog(int min, int max, int valueIndex, int sourceArray, TextView calledView) {
         final Dialog dialog = new Dialog(context);
 
         int[] localBatchSamples = batchLogic.getBatchSamples();
 
+        // change the background to a blue underline while the numberWheel is open, if moved to within the 
+        //  OnClickListener it will only turn blue when the user taps on the view, instead of it being blue
+        //  while the numberWheelDialog is open
+        
         calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_blue_underline));
         dialog.setContentView(R.layout.fragment_number_picker);
         // add confirm and cancel buttons
@@ -211,28 +215,40 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             calledView.setText(String.valueOf(confirmedValue));
 
             // store the confirmed value within its valueIndex in the array
-            batchLogic.setBatchSamplesValue(valueIndex, confirmedValue);
-            Log.i(TAG, "Changed the number of " + sBatchSamples[valueIndex] + " to " + confirmedValue);
+            switch (sourceArray) {
+                // only one condition for now where a numberPicker is needed for a value
+                //  that is not stored within an array, this might change later on.
+                case -1:
+                    batchLogic.setTotalTubes(confirmedValue);
+                    Log.i(TAG, "Changed the number of totalTubes to " + confirmedValue);
+                    break;
+                case 0:
+                    batchLogic.setBatchSamplesValue(valueIndex, confirmedValue);
+                    Log.i(TAG, "Changed the number of " + sBatchSamples[valueIndex] + " to " + confirmedValue);
+                    break;
+                default:
+                    Log.e(TAG, "ERROR - Unknown sourceArray \( " + sourceArray + " \)");
+            }
 
             // perform logic and set the number of tubes left
             batchLogic.performLogic();
             vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
 
+            // grab the new data from batchSamples and batchQC and re-add it to the mBatchSamples ArrayList
             initData();
             // notify the recycler view that there is new data
             batchViewCustomAdapter.notifyDataSetChanged();
 
             // change the background of the clicked back to gray
             calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_gray_underline));
+            // dismiss the dialog
             dialog.dismiss();
         });
         cancel.setOnClickListener(v -> {
             calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_gray_underline));
-            // dismiss the dialog
             dialog.dismiss();
         });
         dialog.show();
-
     }
 
 
@@ -245,46 +261,51 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
         switch (view.getId()) {
             case R.id.numTubesAvailable:
-//                numberWheelDialog(0, 50, 999, vNumTubesAvailable);
+               numberWheelDialog([batchQC[0] + batchQC[1] + 1, 50, -1, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
-                numberWheelDialog(0, availableTubes, 0, vNumWaterMDLs);
+                numberWheelDialog(0, availableTubes, 0, 0, vNumWaterMDLs);
                 break;
-            case R.id.numSoilMDLs:
+//             case R.id.numSoilMDLs:
 //                numberWheelDialog(0, 50, 999, vNumSoilMDLs);
-                break;
+//                 break;
             case R.id.numWaterPTs:
-                numberWheelDialog(0, availableTubes, 1, vNumWaterPTs);
+                numberWheelDialog(0, availableTubes, 1, 0, vNumWaterPTs);
                 break;
-            case R.id.numSoilPTs:
+//             case R.id.numSoilPTs:
 //                numberWheelDialog(0, 50, 999, vNumSoilPTs);
-                break;
+//                 break;
             case R.id.numShared:
                 // only allow the user to enter in a value IF they have both TP and TKN already
                 //  entered in, this helps reduce problems when generating the max number of
                 //  samples
                 if (localBatchSamples[3] != 0 && localBatchSamples[4] != 0) {
-                    numberWheelDialog(0, (localBatchSamples[3] + localBatchSamples[4]), 2, vNumShared);
+                    numberWheelDialog(0, (localBatchSamples[3] + localBatchSamples[4]), 2, 0, vNumShared);
+                } else {
+                    Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.numTP:
-
-                // TODO sometimes causes the value generated to be less than 0, which is a problem
-
-
                 maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes, true);
-                Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
-                numberWheelDialog(0, maxAllowedSamples, 3, vNumTP);
+                if (maxAllowedSamples > 0) {
+                    Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
+                    numberWheelDialog(0, maxAllowedSamples, 3, 0, vNumTP);
+                } else {
+                    Log.i(TAG, "No new maximum for " + sBatchSamples[3] + " was found | 0 > " + maxAllowedSamples);
+                }
                 break;
             case R.id.numTKN:
                 maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes, false);
-                Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
-                numberWheelDialog(0, maxAllowedSamples, 4, vNumTKN);
+                if (maxAllowedSamples > 0) {
+                    Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
+                    numberWheelDialog(0, maxAllowedSamples, 4, 0, vNumTKN);
+               } else {
+                    Log.i(TAG, "No new maximum for " + sBatchSamples[4] + " was found | 0 > " + maxAllowedSamples);
+                }
                 break;
             case R.id.numExtra:
-                numberWheelDialog(0, availableTubes, 5, vNumExtra);
+                numberWheelDialog(0, availableTubes, 5, 0, vNumExtra);
                 break;
         }
     }
-
 }
