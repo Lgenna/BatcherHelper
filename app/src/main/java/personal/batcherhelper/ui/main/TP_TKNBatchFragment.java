@@ -272,6 +272,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 // TODO sometimes causes the value generated to be less than 0, which is a problem
 
 
+                //test
+
                 maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes, true);
                 Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
                 numberWheelDialog(0, maxAllowedSamples, 3, vNumTP);
