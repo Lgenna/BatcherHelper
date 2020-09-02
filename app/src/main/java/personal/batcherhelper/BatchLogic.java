@@ -68,6 +68,10 @@ public class BatchLogic {
         this.batchSamples = batchSamples;
     }
 
+    public int getBatchSize() {
+        return totalTubes - availableTubes;
+    }
+
     public int[] getBatchQC() {
         return batchQC;
     }
@@ -75,7 +79,6 @@ public class BatchLogic {
     public int getAvailableTubes() {
         return availableTubes;
     }
-
 
     public String[] getBatchSamplesNames() {
         String[] copiedArray = Arrays.copyOf(batchSamplesNames, batchSamplesNames.length);
@@ -93,7 +96,7 @@ public class BatchLogic {
      * Prints the output of the batch in a squishy-human readable format.
      *
      * Mainly for test purposes as it is designed to print only to the console
-    */
+     */
     private String batchPrinter() {
 
         StringBuilder stringy = new StringBuilder();
@@ -173,14 +176,14 @@ public class BatchLogic {
     }
 
     /**
-      Adds everything together before finalizing just as a precautionary measure
-    */
+     Adds everything together before finalizing just as a precautionary measure
+     */
 
-    public int performLogic() {
+    public void performLogic() {
 
         // running total of added values
         int runningTotal = 0;
-        int availableTubes = totalTubes;
+//        int availableTubes = totalTubes;
 
         // local pre-calculated variables
         int waterTpMinusShared = batchSamples[3] - batchSamples[2];
@@ -251,13 +254,13 @@ public class BatchLogic {
                 }
             }
 
-            System.out.println(Arrays.toString(batchSamples));
+//            setAvailableTubes(availableTubes);
 
-            return availableTubes;
+//            return availableTubes;
 
         } else {
             Log.i(TAG, "Not enough room | Need : " + runningTotal + " > Have : " + availableTubes);
-            return -999;
+//            return -999;
         }
     }
 
@@ -274,13 +277,16 @@ public class BatchLogic {
 
     public int findMaxAllowedSample(int maxSampleAmount, boolean isTP) {
         int waterNeededMS, waterNeededMSD;
+        int numTP = 0, numTKN = 0;
+
         if (isTP) {
-            waterNeededMS = findNeededSpikes(maxSampleAmount, 0, true);
-            waterNeededMSD = findNeededSpikes(maxSampleAmount, 0, false);
+            numTP = maxSampleAmount;
         } else {
-            waterNeededMS = findNeededSpikes(0, maxSampleAmount, true);
-            waterNeededMSD = findNeededSpikes(0, maxSampleAmount, false);
+            numTKN = maxSampleAmount;
         }
+
+        waterNeededMS = findNeededSpikes(numTP, numTKN, true);
+        waterNeededMSD = findNeededSpikes(numTP, numTKN, false);
 
         if ((waterNeededMS + waterNeededMSD + maxSampleAmount) <= availableTubes) {
             return maxSampleAmount;
@@ -288,4 +294,6 @@ public class BatchLogic {
             return findMaxAllowedSample(maxSampleAmount - 1, isTP);
         }
     }
+
+    // TODO maximum soils
 }

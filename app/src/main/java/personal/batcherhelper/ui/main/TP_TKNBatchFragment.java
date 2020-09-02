@@ -34,11 +34,24 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String TAG = "TP_TKNBatchFragment";
 
-//    private PageViewModel pageViewModel;
     private View view;
     Context context;
 
     BatchLogic batchLogic = new BatchLogic();
+
+    // get sample names and store it because it never changes, sample amounts do however
+    String[] sBatchSamples = batchLogic.getBatchSamplesNames();
+    String[] sBatchQC = batchLogic.getBatchQCNames();
+
+    boolean needsCurve;
+
+    TextView vNumTubesAvailable, vNumExtra, vNumShared, vNumTP, vNumTKN,
+            vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs, vNumTubesLeft,
+            vCurrentBatchSize;
+    CheckBox vNeedsCurve;
+
+    // items for recycler View
+    ArrayList<BatchItem> mBatchItems = new ArrayList<>();
 
     public static TP_TKNBatchFragment newInstance() {
         TP_TKNBatchFragment fragment = new TP_TKNBatchFragment();
@@ -51,7 +64,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         context = getContext();
     }
 
-    TextView iCurrentBatchSize;
+
 
     @Override
     public View onCreateView(
@@ -59,6 +72,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_tp_tkn_batch, container, false);
 
+        batchLogic.performLogic();
+//        int[] localBatchSamples = batchLogic.getBatchSamples();
 
         vNumTubesAvailable = view.findViewById(R.id.numTubesAvailable);
         vNumTubesAvailable.setOnClickListener(this); // calling onClick() method
@@ -81,80 +96,31 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         vNeedsCurve = view.findViewById(R.id.isCurveNeeded);
         vNeedsCurve.setOnClickListener(this);
         vNumTubesLeft = view.findViewById(R.id.numOfTubesLeft);
+        vCurrentBatchSize = view.findViewById(R.id.currentBatchSizeNumber);
 
-        batchLogic.performLogic();
+        vCurrentBatchSize.setText(String.valueOf(batchLogic.getBatchSize()));
 
         initData();
         initRecyclerView();
 
-        getBatchSize();
+//        getBatchSize();
 
         return view;
     }
 
-    ArrayList<BatchItem> mBatchItems = new ArrayList<>();
-//    ArrayList<BatchItemNames> mBatchItemNames = new ArrayList<>();
-
-
     private void itemAdder(String itemName, boolean isQC, int itemCount, int indexInArray) {
-
         int[] batchQC = batchLogic.getBatchQC();
         int[] batchSamples = batchLogic.getBatchSamples();
-//        ArrayList<String> batchItemNames = new ArrayList<>();
 
-//        BatchItemNames batchItemName = new BatchItemNames();
-//        batchItemName.setmItem(itemName);
+        BatchItem item = new BatchItem();
 
-//        for (BatchItem item : mBatchItems) {
-//            batchItemNames.add(item.getmItem());
-//        }
+        item.setmItem(itemName);
+        item.setmIsQC(isQC);
+        item.setmCount(itemCount);
+        item.setmIndexInArray(indexInArray);
 
-//        if (!batchItemNames.contains(itemName)) { // item was not present
-//
-//            System.out.println("item name not found : " + itemName);
-
-            BatchItem item = new BatchItem();
-
-            item.setmItem(itemName);
-            item.setmIsQC(isQC);
-            item.setmCount(itemCount);
-            item.setmIndexInArray(indexInArray);
-
-            mBatchItems.add(item);
-//
-////            mBatchItemNames.add(batchItemName);
-//        } else { // item was present, now time to update it
-//            int position = batchItemNames.indexOf(itemName);
-//            BatchItem updateThis = mBatchItems.get(position);
-//
-//            if (updateThis.getmIsQC()) {
-//                updateThis.setmCount(batchQC[indexInArray]);
-//            } else {
-//                updateThis.setmCount(batchSamples[indexInArray]);
-//            }
-//
-//            mBatchItems.set(position, updateThis);
-//        }
+        mBatchItems.add(item);
     }
-
-    private void getBatchSize() {
-        int batchSize = 0;
-
-        for (BatchItem item : mBatchItems ) {
-            batchSize += item.getmCount();
-        }
-        iCurrentBatchSize = view.findViewById(R.id.currentBatchSizeNumber);
-        iCurrentBatchSize.setText(String.valueOf(batchSize));
-    }
-
-    String[] sBatchSamples = batchLogic.getBatchSamplesNames();
-    String[] sBatchQC = batchLogic.getBatchQCNames();
-
-    boolean needsCurve;
-
-    TextView vNumTubesAvailable, vNumExtra, vNumShared, vNumTP, vNumTKN,
-            vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs, vNumTubesLeft;
-    CheckBox vNeedsCurve;
 
     private void initData() {
 
@@ -173,7 +139,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 // it should... SHOULD, avoid adding the same value twice... should...
 
                 itemAdder(sBatchQC[i], true, batchQC[i], i);
-                System.out.println("Added " + sBatchQC[i] + " to the ArrayList");
+//                Log.i(TAG, "Added " + sBatchQC[i] + " to the ArrayList");
             }
         }
 
@@ -185,10 +151,10 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
                 if (i == 6 || i == 7) { // special case to subtract the shared samples from TP and TKN
                     itemAdder(sBatchSamples[i], false, batchSamples[i] - batchSamples[5], i);
-                    System.out.println("Added " + sBatchSamples[i] + " to the ArrayList");
+//                    Log.i(TAG, "Added " + sBatchQC[i] + " to the ArrayList");
                 } else {
                     itemAdder(sBatchSamples[i], false, batchSamples[i], i);
-                    System.out.println("Added " + sBatchSamples[i] + " to the ArrayList");
+//                  Log.i(TAG, "Added " + sBatchQC[i] + " to the ArrayList");
                 }
             }
         }
@@ -206,21 +172,19 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         mRecyclerView.setAdapter(batchViewCustomAdapter);
     }
 
-    int mostRecentNumber;
+
+    // is onValueChange required within the class? If yes, what does it do?
+//    int mostRecentNumber;
 
     @Override
     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-        mostRecentNumber = i1;
+//        mostRecentNumber = i1;
     }
 
     private void numberWheelDialog(int min, int max, int valueIndex, TextView calledView) {
-
-
-//        int[] batchQC = batchLogic.getBatchQC();
-
-        // get most recent values stored in batchSamples array
-        int[] batchSamples = batchLogic.getBatchSamples();
         final Dialog dialog = new Dialog(context);
+
+        int[] localBatchSamples = batchLogic.getBatchSamples();
 
         calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_blue_underline));
         dialog.setContentView(R.layout.fragment_number_picker);
@@ -235,32 +199,37 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         // set the max to the maximum number of samples you can have without going over the number of tubes
         numberPicker.setMaxValue(max);
         // set the current value of the number wheel to the last stored number
-        numberPicker.setValue(batchSamples[valueIndex]);
+        numberPicker.setValue(localBatchSamples[valueIndex]);
         numberPicker.setWrapSelectorWheel(false);
         numberPicker.setOnValueChangedListener(this);
         confirm.setOnClickListener(v -> {
 
             int confirmedValue = numberPicker.getValue();
-
             Log.i(TAG, "Received " + confirmedValue + " as the confirmed value.");
 
+            // set whoever called the numberPicker to the confirmed value
             calledView.setText(String.valueOf(confirmedValue));
-
 
             // store the confirmed value within its valueIndex in the array
             batchLogic.setBatchSamplesValue(valueIndex, confirmedValue);
+            Log.i(TAG, "Changed the number of " + sBatchSamples[valueIndex] + " to " + confirmedValue);
 
-            vNumTubesLeft.setText(String.valueOf(batchLogic.performLogic())); // perform logic and set the number of tubes left
+            // perform logic and set the number of tubes left
+            batchLogic.performLogic();
+            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
 
             initData();
+            // notify the recycler view that there is new data
             batchViewCustomAdapter.notifyDataSetChanged();
 
+            // change the background of the clicked back to gray
             calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_gray_underline));
             dialog.dismiss();
         });
         cancel.setOnClickListener(v -> {
             calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_gray_underline));
-            dialog.dismiss(); // dismiss the dialog
+            // dismiss the dialog
+            dialog.dismiss();
         });
         dialog.show();
 
@@ -270,20 +239,22 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
 
-        int[] batchSamples = batchLogic.getBatchSamples();
+        int[] localBatchSamples = batchLogic.getBatchSamples();
+        int availableTubes = batchLogic.getAvailableTubes();
+        int maxAllowedSamples;
 
         switch (view.getId()) {
             case R.id.numTubesAvailable:
 //                numberWheelDialog(0, 50, 999, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
-//                numberWheelDialog(0, 50, 0, vNumWaterMDLs);
+                numberWheelDialog(0, availableTubes, 0, vNumWaterMDLs);
                 break;
             case R.id.numSoilMDLs:
 //                numberWheelDialog(0, 50, 999, vNumSoilMDLs);
                 break;
             case R.id.numWaterPTs:
-//                numberWheelDialog(0, 50, 1, vNumWaterPTs);
+                numberWheelDialog(0, availableTubes, 1, vNumWaterPTs);
                 break;
             case R.id.numSoilPTs:
 //                numberWheelDialog(0, 50, 999, vNumSoilPTs);
@@ -292,18 +263,26 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 // only allow the user to enter in a value IF they have both TP and TKN already
                 //  entered in, this helps reduce problems when generating the max number of
                 //  samples
-                if (batchSamples[3] != 0 && batchSamples[4] != 0) {
-                    numberWheelDialog(0, (batchSamples[3] + batchSamples[4]), 2, vNumShared);
+                if (localBatchSamples[3] != 0 && localBatchSamples[4] != 0) {
+                    numberWheelDialog(0, (localBatchSamples[3] + localBatchSamples[4]), 2, vNumShared);
                 }
                 break;
             case R.id.numTP:
-                numberWheelDialog(0, batchLogic.findMaxAllowedSample(50, true), 3, vNumTP);
+
+                // TODO sometimes causes the value generated to be less than 0, which is a problem
+
+
+                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes, true);
+                Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
+                numberWheelDialog(0, maxAllowedSamples, 3, vNumTP);
                 break;
             case R.id.numTKN:
-                numberWheelDialog(0, batchLogic.findMaxAllowedSample(50, false), 4, vNumTKN);
+                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes, false);
+                Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
+                numberWheelDialog(0, maxAllowedSamples, 4, vNumTKN);
                 break;
             case R.id.numExtra:
-//                numberWheelDialog(0, 50, 5, vNumExtra);
+                numberWheelDialog(0, availableTubes, 5, vNumExtra);
                 break;
         }
     }
