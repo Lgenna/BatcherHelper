@@ -30,7 +30,7 @@ public class BatchLogic {
     public int soilExtra = 0;
 
     public boolean isCurve = false;
-    public int totalTubes = 50;
+    public int totalTubes = 0;
     private int availableTubes = totalTubes;
 
 
@@ -56,6 +56,10 @@ public class BatchLogic {
             " x Blank",     " x CCV",           " x Curve Points",  " x Water LCS", " x Water MS",
             " x Water MSD", " x Soil Blanks",   " x Soil LCS",      " x Soil MS",   " x Soil MSD"};
 
+    public void setTotalTubes(int totalTubes) {
+        this.totalTubes = totalTubes;
+    }
+    
     public int[] getBatchSamples() {
         return batchSamples;
     }
