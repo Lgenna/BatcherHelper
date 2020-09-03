@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -203,7 +204,16 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         // set the max to the maximum number of samples you can have without going over the number of tubes
         numberPicker.setMaxValue(max);
         // set the current value of the number wheel to the last stored number
-        numberPicker.setValue(localBatchSamples[valueIndex]);
+        if (valueIndex == -1) {
+            // min because there was no previous value
+                numberPicker.setValue(min);
+
+                // TODO don't always set the min, set the number of totalTubes or the min if totalTubes
+                //  was never set before.
+
+        } else {
+            numberPicker.setValue(localBatchSamples[valueIndex]);
+        }
         numberPicker.setWrapSelectorWheel(false);
         numberPicker.setOnValueChangedListener(this);
         confirm.setOnClickListener(v -> {
@@ -227,7 +237,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                     Log.i(TAG, "Changed the number of " + sBatchSamples[valueIndex] + " to " + confirmedValue);
                     break;
                 default:
-                    Log.e(TAG, "ERROR - Unknown sourceArray \( " + sourceArray + " \)");
+                    Log.e(TAG, "ERROR - Unknown sourceArray /( " + sourceArray + " /)");
             }
 
             // perform logic and set the number of tubes left
@@ -256,12 +266,13 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     public void onClick(View view) {
 
         int[] localBatchSamples = batchLogic.getBatchSamples();
+        int[] localBatchQC = batchLogic.getBatchQC();
         int availableTubes = batchLogic.getAvailableTubes();
         int maxAllowedSamples;
 
         switch (view.getId()) {
             case R.id.numTubesAvailable:
-               numberWheelDialog([batchQC[0] + batchQC[1] + 1, 50, -1, vNumTubesAvailable);
+               numberWheelDialog(localBatchQC[0] + localBatchQC[1] + 1, 50, -1,-1, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
                 numberWheelDialog(0, availableTubes, 0, 0, vNumWaterMDLs);
@@ -286,7 +297,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.numTP:
-                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes, true);
+                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes + localBatchSamples[3], true);
                 if (maxAllowedSamples > 0) {
                     Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
                     numberWheelDialog(0, maxAllowedSamples, 3, 0, vNumTP);
@@ -295,7 +306,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.numTKN:
-                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes, false);
+                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes + localBatchSamples[4], false);
                 if (maxAllowedSamples > 0) {
                     Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
                     numberWheelDialog(0, maxAllowedSamples, 4, 0, vNumTKN);

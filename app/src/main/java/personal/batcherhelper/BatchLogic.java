@@ -31,7 +31,7 @@ public class BatchLogic {
 
     public boolean isCurve = false;
     public int totalTubes = 0;
-    private int availableTubes = totalTubes;
+    private int availableTubes = 0;
 
 
     public int[] batchSamples = new int[] {
@@ -41,7 +41,7 @@ public class BatchLogic {
             soilTP - soilShared,    soilTKN - soilShared,   soilExtra};
 
     private int[] batchQC = new int[]{
-            3, 2, 0, 2, 0,
+            3, 2, 0, 0, 0,
             0, 0, 0, 0, 0};
     //  blank,      CCV,        curvePoints,    waterLCS,   waterMS,
     //  waterMSD,   soilBlank,  soilLCS,        soilMS,     soilMSD
@@ -58,6 +58,7 @@ public class BatchLogic {
 
     public void setTotalTubes(int totalTubes) {
         this.totalTubes = totalTubes;
+        this.availableTubes = totalTubes;
     }
     
     public int[] getBatchSamples() {
@@ -186,22 +187,32 @@ public class BatchLogic {
     public void performLogic() {
 
         // running total of added values
-        int runningTotal = 0;
-//        int availableTubes = totalTubes;
+//        int runningTotal = 0;
 
         // local pre-calculated variables
-        int waterTpMinusShared = batchSamples[3] - batchSamples[2];
-        int waterTknMinusShared = batchSamples[4] - batchSamples[2];
+//        int waterTpMinusShared = batchSamples[3] - batchSamples[2];
+//        int waterTknMinusShared = batchSamples[4] - batchSamples[2];
 
         // check to see if there is a curve needed
-        int curvePoints = 0;
-        if (isCurve) {
-            curvePoints = 7;
-        }
+//        if (isCurve) {
+//            batchQC[2] = 7;
+//        }
 
         // finds MS and MSD needed for waters
-        int waterNeededMS = findNeededSpikes(batchSamples[3], batchSamples[4], true);
-        int waterNeededMSD = findNeededSpikes(batchSamples[3], batchSamples[4], false);
+
+
+        int waterLCS = 0;
+
+        // add LCS's for waters and soils if present
+        if (batchSamples[3] + batchSamples[4] > 0) {
+
+            // TODO add rest of checks to see if water / soil samples are present
+            //  keep in mind that PT's, MDL's, and Extras are treated differently than samples
+
+            waterLCS += 2;
+        }
+
+        batchQC[3] = waterLCS;
 
         // finds the total number of soils, used later
         int totalSoils = 0;
@@ -219,53 +230,50 @@ public class BatchLogic {
 //        int soilNeededMSD = findExtraMSD(soilTP, soilTKN);//  CHANGE TO ARRAY CALLS
 
         // add up everything in the batchQC array
-        for (int element : batchQC) {
-            runningTotal += element;
-        }
+//        for (int element : batchQC) {
+//            runningTotal += element;
+//        }
 
 
         // add the rest of the computed values
-        runningTotal += waterTpMinusShared + waterTknMinusShared;
-        runningTotal += batchSamples[2]; // waterShared
-        runningTotal += curvePoints;
+//        runningTotal += waterTpMinusShared + waterTknMinusShared;
+//        runningTotal += batchSamples[2]; // waterShared
+//        runningTotal += curvePoints;
+//        runningTotal += waterLCS;
 //        runningTotal += (waterNeededMS + waterNeededMSD);
 //        runningTotal += (soilBlank + soilLCS);
 //        runningTotal += (soilNeededMS + soilNeededMSD);
 
         // now check to see if all of that is greater than 0, otherwise something went wrong and
         // there are now negative tubes available
-        if ((totalTubes - runningTotal) >= 0) {
+//        if ((totalTubes - runningTotal) >= 0) {
 
-            batchQC[2] = curvePoints;
+            int updatedAvailableTubes = totalTubes;
 
-            batchQC[4] = waterNeededMS;
-            batchQC[5] = waterNeededMSD;
-
-//            batchQC[6] = soilBlank;
-//            batchQC[7] = soilLCS;
-//            batchQC[8] = soilNeededMS;
-//            batchQC[9] = soilNeededMSD;
+            batchQC[4] = findNeededSpikes(batchSamples[3], batchSamples[4], true);
+            batchQC[5] = findNeededSpikes(batchSamples[3], batchSamples[4], false);
 
             for (int value : batchQC) {
-                availableTubes -= value;
+                updatedAvailableTubes -= value;
             }
 
-            for (int i = 1; i < batchSamples.length; i++) {
-                if (i < 3 || i > 4) {
-                    availableTubes -= batchSamples[i];
-                } else {
-                    availableTubes -= (batchSamples[i] - batchSamples[2]);
-                }
+            for (int batchSample : batchSamples) {
+                updatedAvailableTubes -= batchSample;
             }
+
+            updatedAvailableTubes += (batchSamples[2] * 2); // waterShared
+            updatedAvailableTubes += (batchSamples[8] * 2); // soilShared
+
+            availableTubes = updatedAvailableTubes;
 
 //            setAvailableTubes(availableTubes);
 
 //            return availableTubes;
 
-        } else {
-            Log.i(TAG, "Not enough room | Need : " + runningTotal + " > Have : " + availableTubes);
-//            return -999;
-        }
+//        } else {
+//            Log.i(TAG, "Not enough room | Need : " + runningTotal + " > Have : " + newAvailableTubes);
+////            return -999;
+
     }
 
     /**
@@ -292,7 +300,13 @@ public class BatchLogic {
         waterNeededMS = findNeededSpikes(numTP, numTKN, true);
         waterNeededMSD = findNeededSpikes(numTP, numTKN, false);
 
-        if ((waterNeededMS + waterNeededMSD + maxSampleAmount) <= availableTubes) {
+
+        if ((waterNeededMS + waterNeededMSD + maxSampleAmount) - availableTubes <= 0) {
+
+            // TODO fix this if statement
+            //  needs to add MS + MSD on left
+            //
+
             return maxSampleAmount;
         } else {
             return findMaxAllowedSample(maxSampleAmount - 1, isTP);
