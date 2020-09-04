@@ -287,7 +287,7 @@ public class BatchLogic {
      *  matrix spike duplicates
      */
 
-    public int findMaxAllowedSample(int maxSampleAmount, int availableTubes, boolean isTP) {
+    public int findMaxAllowedSample(int maxSampleAmount, boolean isTP) {
         // pass availableTubes directly to to the method? Not entirely sure where else its
         //  set other than when totalNumberOfTubes is set, which it sets available tubes
         //  to the same value.
