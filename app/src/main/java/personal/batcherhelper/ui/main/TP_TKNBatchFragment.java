@@ -297,7 +297,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.numTP:
-                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes + localBatchSamples[3], true);
+                maxAllowedSamples + localBatchSamples[3] = batchLogic.findMaxAllowedSample(availableTubes, true);
                 if (maxAllowedSamples > 0) {
                     Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
                     numberWheelDialog(0, maxAllowedSamples, 3, 0, vNumTP);
@@ -306,7 +306,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.numTKN:
-                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes + localBatchSamples[4], false);
+                maxAllowedSamples + localBatchSamples[4] = batchLogic.findMaxAllowedSample(availableTubes, false);
                 if (maxAllowedSamples > 0) {
                     Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
                     numberWheelDialog(0, maxAllowedSamples, 4, 0, vNumTKN);
