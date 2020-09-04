@@ -287,7 +287,11 @@ public class BatchLogic {
      *  matrix spike duplicates
      */
 
-    public int findMaxAllowedSample(int maxSampleAmount, boolean isTP) {
+    public int findMaxAllowedSample(int maxSampleAmount, int availableTubes, boolean isTP) {
+        // pass availableTubes directly to to the method? Not entirely sure where else its
+        //  set other than when totalNumberOfTubes is set, which it sets available tubes
+        //  to the same value.
+        
         int waterNeededMS, waterNeededMSD;
         int numTP = 0, numTKN = 0;
 
@@ -301,12 +305,7 @@ public class BatchLogic {
         waterNeededMSD = findNeededSpikes(numTP, numTKN, false);
 
 
-        if ((waterNeededMS + waterNeededMSD + maxSampleAmount) - availableTubes <= 0) {
-
-            // TODO fix this if statement
-            //  needs to add MS + MSD on left
-            //
-
+        if ((waterNeededMS + waterNeededMSD + maxSampleAmount) <= availableTubes) {
             return maxSampleAmount;
         } else {
             return findMaxAllowedSample(maxSampleAmount - 1, isTP);
