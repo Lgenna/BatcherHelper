@@ -277,23 +277,22 @@ public class BatchLogic {
     }
 
     /**
-     * Still a work in progress but theoretically this finds the maximum number of samples you can
-     *  have for a specific sample type given. This uses recursion till it generates a number less
-     *  or equal to the number of available tubes.
+     * This method finds the maximum number of samples you can have for a specific sample type
+     *  given (only water samples however). This uses recursion till it generates a number less
+     *  or equal to the number of available tubes + stored sample amounts.
      *
      * @param maxSampleAmount the maximum number of samples you can have of that type, usually 50
-     * @param isTP temporary check to see if the given sample type is TP or TKN
+     * @param isTP A check to see if the given sample type is TP or TKN
      * @return returns the maximum number of samples you can have minus needed matrix spikes and
-     *  matrix spike duplicates
+     *  matrix spike duplicates, these are added later.
      */
 
     public int findMaxAllowedSample(int maxSampleAmount, boolean isTP) {
-        // pass availableTubes directly to to the method? Not entirely sure where else its
-        //  set other than when totalNumberOfTubes is set, which it sets available tubes
-        //  to the same value.
         
         int waterNeededMS, waterNeededMSD;
         int numTP = 0, numTKN = 0;
+        int storedMS = batchQC[4];
+        int storedMSD = batchQC[5];
 
         if (isTP) {
             numTP = maxSampleAmount;
@@ -301,16 +300,29 @@ public class BatchLogic {
             numTKN = maxSampleAmount;
         }
 
+        // compute the needed number of MS and MSD's for the given number of samples
         waterNeededMS = findNeededSpikes(numTP, numTKN, true);
         waterNeededMSD = findNeededSpikes(numTP, numTKN, false);
 
+        int waterLCS = 0;
 
-        if ((waterNeededMS + waterNeededMSD + maxSampleAmount) <= availableTubes) {
+        // We have to do a special case to see if there are no LCS's added yet.
+        //  They were not "officially" added yet because there are no samples, but you
+        //  can't "officially" add them here because the user might cancel the
+        //  numberPicker dialog window.
+        if (batchQC[3] == 0) {
+            waterLCS += 2;
+        }
+
+        // One beefy check of an if statement that makes a recursive call if false.
+        //  Mainly checks generated values to ones already stored
+        if ((waterNeededMS + waterNeededMSD + maxSampleAmount + waterLCS) <=
+                availableTubes + storedMS + storedMSD) {
             return maxSampleAmount;
         } else {
             return findMaxAllowedSample(maxSampleAmount - 1, isTP);
         }
     }
 
-    // TODO maximum soils
+    // TODO maximum soils findMaxAllowedSample
 }
