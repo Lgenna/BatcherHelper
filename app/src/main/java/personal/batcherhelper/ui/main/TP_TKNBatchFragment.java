@@ -291,13 +291,20 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 //  entered in, this helps reduce problems when generating the max number of
                 //  samples
                 if (localBatchSamples[3] != 0 && localBatchSamples[4] != 0) {
-                    numberWheelDialog(0, (localBatchSamples[3] + localBatchSamples[4]), 2, 0, vNumShared);
+                    int smallest = localBatchSamples[3]; // we want the smallest because there cant
+                                                         //  be more than the smallest number of
+                                                         //  samples shared
+                    if (smallest > localBatchSamples[4]) {
+                        smallest = localBatchSamples[4];
+                    }
+
+                    numberWheelDialog(0, smallest, 2, 0, vNumShared);
                 } else {
                     Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.numTP:
-                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes + localBatchSamples[3], true);
+                maxAllowedSamples = localBatchSamples[3] + batchLogic.findMaxAllowedSample(availableTubes, true);
                 if (maxAllowedSamples > 0) {
                     Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
                     numberWheelDialog(0, maxAllowedSamples, 3, 0, vNumTP);
@@ -306,7 +313,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.numTKN:
-                maxAllowedSamples = batchLogic.findMaxAllowedSample(availableTubes + localBatchSamples[4], false);
+                maxAllowedSamples = localBatchSamples[4] + batchLogic.findMaxAllowedSample(availableTubes, false);
                 if (maxAllowedSamples > 0) {
                     Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
                     numberWheelDialog(0, maxAllowedSamples, 4, 0, vNumTKN);
