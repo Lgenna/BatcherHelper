@@ -261,6 +261,23 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         dialog.show();
     }
 
+    /**
+     * Separate method to check if availableTubes has been set to reduce duplicated code, also spits
+     *  some info to the user stating that they should set the number of available tubes
+     * @return returns true or false depending on if availableTubes was set
+     */
+
+    private boolean availableTubesSet() {
+        if (vNumTubesAvailable.getText().equals("")) {
+            // was never set yet
+            Log.w(TAG, "AvailableTubes was not set yet, skipping onClick call");
+            Toast.makeText(context, "Set # tubes available first", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        // was set
+        return true;
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -271,58 +288,103 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         int maxAllowedSamples;
 
         switch (view.getId()) {
+            case R.id.isCurveNeeded:
+                if (availableTubesSet()) {
+                    // check to see the status of "checked"
+                    if (vNeedsCurve.isChecked()) {
+                        batchLogic.performLogic();
+                        // check to see if there are enough available tubes
+                        if (availableTubes - 7 >= 0) {
+                            // then add the 7 curve points needed
+                            batchLogic.setCurvePoints(true);
+                            Log.i(TAG, "Set 7 curve points.");
+                            batchLogic.performLogic();
+                            initData();
+                            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
+                        } else {
+                            Log.w(TAG, "Not enough room for the 7 curve points needed.");
+                            Toast.makeText(context, "Not enough available tubes", Toast.LENGTH_SHORT).show();
+                            vNeedsCurve.setChecked(false);
+                        }
+                    } else {
+                        // was unchecked, remove added curvePoints if present
+                        if (localBatchQC[2] > 0) {
+                            Log.w(TAG, "Removed 7 curve points.");
+                            batchLogic.setCurvePoints(false);
+                            batchLogic.performLogic();
+                            initData();
+                            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
+                        }
+
+                    }
+                } else {
+                    vNeedsCurve.setChecked(false);
+                }
+                break;
             case R.id.numTubesAvailable:
-               numberWheelDialog(localBatchQC[0] + localBatchQC[1] + 1, 50, -1,-1, vNumTubesAvailable);
+
+                // TODO "lock" this if any other user configurable value has been changed, this can
+                //  help prevent negative available tubes, it also sounds much easier said than done
+
+                numberWheelDialog(localBatchQC[0] + localBatchQC[1] + 1, 50, -1,-1, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
-                numberWheelDialog(0, availableTubes, 0, 0, vNumWaterMDLs);
+//                numberWheelDialog(0, availableTubes, 0, 0, vNumWaterMDLs);
                 break;
-//             case R.id.numSoilMDLs:
+             case R.id.numSoilMDLs:
 //                numberWheelDialog(0, 50, 999, vNumSoilMDLs);
-//                 break;
+                 break;
             case R.id.numWaterPTs:
-                numberWheelDialog(0, availableTubes, 1, 0, vNumWaterPTs);
+//                numberWheelDialog(0, availableTubes, 1, 0, vNumWaterPTs);
                 break;
-//             case R.id.numSoilPTs:
+             case R.id.numSoilPTs:
 //                numberWheelDialog(0, 50, 999, vNumSoilPTs);
-//                 break;
+                 break;
             case R.id.numShared:
-                // only allow the user to enter in a value IF they have both TP and TKN already
-                //  entered in, this helps reduce problems when generating the max number of
-                //  samples
-                if (localBatchSamples[3] != 0 && localBatchSamples[4] != 0) {
-                    int smallest = localBatchSamples[3]; // we want the smallest because there cant
-                                                         //  be more than the smallest number of
-                                                         //  samples shared
-                    if (smallest > localBatchSamples[4]) {
-                        smallest = localBatchSamples[4];
-                    }
+                if (availableTubesSet()) {
+                    // only allow the user to enter in a value IF they have both TP and TKN already
+                    //  entered in, this helps reduce problems when generating the max number of
+                    //  samples
+                    if (localBatchSamples[3] != 0 && localBatchSamples[4] != 0) {
+                        // we want the smallest because there cant be more than the smallest number of
+                        // samples shared
+                        int smallest = localBatchSamples[3];
+                        if (smallest > localBatchSamples[4]) {
+                            smallest = localBatchSamples[4];
+                        }
 
-                    numberWheelDialog(0, smallest, 2, 0, vNumShared);
-                } else {
-                    Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
+                        numberWheelDialog(0, smallest, 2, 0, vNumShared);
+                    } else {
+                        Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             case R.id.numTP:
-                maxAllowedSamples = localBatchSamples[3] + batchLogic.findMaxAllowedSample(availableTubes, true);
-                if (maxAllowedSamples > 0) {
-                    Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
-                    numberWheelDialog(0, maxAllowedSamples, 3, 0, vNumTP);
-                } else {
-                    Log.i(TAG, "No new maximum for " + sBatchSamples[3] + " was found | 0 > " + maxAllowedSamples);
+                if (availableTubesSet()) {
+                    maxAllowedSamples = localBatchSamples[3] + batchLogic.findMaxAllowedSample(availableTubes, true);
+                    if (maxAllowedSamples > 0) {
+                        Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
+                        numberWheelDialog(0, maxAllowedSamples, 3, 0, vNumTP);
+                    } else {
+                        Log.i(TAG, "No new maximum for " + sBatchSamples[3] + " was found | 0 > " + maxAllowedSamples);
+                    }
                 }
                 break;
             case R.id.numTKN:
-                maxAllowedSamples = localBatchSamples[4] + batchLogic.findMaxAllowedSample(availableTubes, false);
-                if (maxAllowedSamples > 0) {
-                    Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
-                    numberWheelDialog(0, maxAllowedSamples, 4, 0, vNumTKN);
-               } else {
-                    Log.i(TAG, "No new maximum for " + sBatchSamples[4] + " was found | 0 > " + maxAllowedSamples);
+                if (availableTubesSet()) {
+                    maxAllowedSamples = localBatchSamples[4] + batchLogic.findMaxAllowedSample(availableTubes, false);
+                    if (maxAllowedSamples > 0) {
+                        Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
+                        numberWheelDialog(0, maxAllowedSamples, 4, 0, vNumTKN);
+                    } else {
+                        Log.i(TAG, "No new maximum for " + sBatchSamples[4] + " was found | 0 > " + maxAllowedSamples);
+                    }
                 }
                 break;
             case R.id.numExtra:
-                numberWheelDialog(0, availableTubes, 5, 0, vNumExtra);
+                if (availableTubesSet()) {
+                    numberWheelDialog(0, availableTubes, 5, 0, vNumExtra);
+                }
                 break;
         }
     }

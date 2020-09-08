@@ -97,6 +97,18 @@ public class BatchLogic {
         return copiedArray;
     }
 
+    public void setCurvePoints(boolean addPoints) {
+        if (addPoints) {
+            this.batchQC[2] = 7;
+        } else {
+            this.batchQC[2] = 0;
+        }
+    }
+
+    public int getLCS() {
+        return batchQC[3] + batchQC[7];
+    }
+
     /**
      * Prints the output of the batch in a squishy-human readable format.
      *
@@ -202,17 +214,20 @@ public class BatchLogic {
 
 
         int waterLCS = 0;
+        int soilLCS = 0;
 
         // add LCS's for waters and soils if present
-        if (batchSamples[3] + batchSamples[4] > 0) {
-
-            // TODO add rest of checks to see if water / soil samples are present
-            //  keep in mind that PT's, MDL's, and Extras are treated differently than samples
-
-            waterLCS += 2;
+        for (int i = 0; i < batchSamples.length; i++) {
+            if (i <= 5 && batchSamples[i] > 0) {
+                // any water samples get 2 LCS
+                waterLCS = 2;
+            } else if (batchSamples[i] > 0) {
+                // soils get 1 LCS
+                soilLCS = 1;
+            }
         }
 
-        batchQC[3] = waterLCS;
+        batchQC[3] = waterLCS + soilLCS;
 
         // finds the total number of soils, used later
         int totalSoils = 0;
