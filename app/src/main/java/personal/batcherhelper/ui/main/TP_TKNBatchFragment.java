@@ -53,6 +53,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs, vNumTubesLeft,
             vCurrentBatchSize;
     private CheckBox vNeedsCurve;
+    private ImageButton vResetAllFields;
 
     // recycler view adapter
     private BatchViewCustomAdapter batchViewCustomAdapter;
@@ -102,6 +103,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         vNeedsCurve.setOnClickListener(this);
         vNumTubesLeft = view.findViewById(R.id.numOfTubesLeft);
         vCurrentBatchSize = view.findViewById(R.id.currentBatchSizeNumber);
+        vResetAllFields = view.findViewById(R.id.resetAllFields);
 
         updateData();
         initRecyclerView();
@@ -400,6 +402,10 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 if (availableTubesSet()) {
                     numberWheelDialog(0, availableTubes, 5, 0, vNumExtra);
                 }
+                break;
+            case R.id.resetAllFields:
+                batchLogic.resetAllFields();
+                updateData();
                 break;
         }
     }
