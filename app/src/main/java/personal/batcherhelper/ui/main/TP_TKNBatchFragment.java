@@ -103,14 +103,19 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         vNumTubesLeft = view.findViewById(R.id.numOfTubesLeft);
         vCurrentBatchSize = view.findViewById(R.id.currentBatchSizeNumber);
 
-        vCurrentBatchSize.setText(String.valueOf(batchLogic.getBatchSize()));
-
-        initData();
+        updateData();
         initRecyclerView();
 
         return view;
     }
-
+    
+    public void updateData() {
+        batchLogic.performLogic();
+        vCurrentBatchSize.setText(String.valueOf(batchLogic.getBatchSize()));
+        vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
+        initData();
+    }
+    
     private void itemAdder(String itemName, boolean isQC, int itemCount, int indexInArray) {
         int[] batchQC = batchLogic.getBatchQC();
         int[] batchSamples = batchLogic.getBatchSamples();
@@ -239,13 +244,10 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 default:
                     Log.e(TAG, "ERROR - Unknown sourceArray /( " + sourceArray + " /)");
             }
-
+            
             // perform logic and set the number of tubes left
-            batchLogic.performLogic();
-            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
-
             // grab the new data from batchSamples and batchQC and re-add it to the mBatchSamples ArrayList
-            initData();
+            updateData();
             // notify the recycler view that there is new data
             batchViewCustomAdapter.notifyDataSetChanged();
 
@@ -254,7 +256,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             // dismiss the dialog
             dialog.dismiss();
         });
-        cancel.setOnClickListener(v -> {
+          cancel.setOnClickListener(v -> {
             calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_gray_underline));
             dialog.dismiss();
         });
@@ -298,11 +300,9 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                             // then add the 7 curve points needed
                             batchLogic.setCurvePoints(true);
                             Log.i(TAG, "Set 7 curve points.");
-                            batchLogic.performLogic();
-                            initData();
-                            // notify the recycler view that the dataset was changed
+                            
+                            updateData();
                             batchViewCustomAdapter.notifyDataSetChanged();
-                            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
                         } else {
                             Log.w(TAG, "Not enough room for the 7 curve points needed.");
                             Toast.makeText(context, "Not enough available tubes", Toast.LENGTH_SHORT).show();
@@ -313,11 +313,9 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                         if (localBatchQC[2] > 0) {
                             Log.w(TAG, "Removed 7 curve points.");
                             batchLogic.setCurvePoints(false);
-                            batchLogic.performLogic();
-                            initData();
-                            // notify the recycler view that the dataset was changed
+
+                            updateData();
                             batchViewCustomAdapter.notifyDataSetChanged();
-                            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
                         }
 
                     }
@@ -326,11 +324,27 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.numTubesAvailable:
-
-                // TODO "lock" this if any other user configurable value has been changed, this can
-                //  help prevent negative available tubes, it also sounds much easier said than done
-
-                numberWheelDialog(localBatchQC[0] + localBatchQC[1] + 1, 50, -1,-1, vNumTubesAvailable);
+                // add all samples and QC together and set that as the minimum value
+                int totalQC = 0;
+                int totalSample = 0;
+                for (int QC : localBatchQC) {
+                    totalQC += QC;
+                }
+                for (int sample : localBatchSamples) {
+                    totalSample += sample;
+                }
+               
+                // if there happens to be no samples, set the minimum to one higher than QC needed
+                //  because a batch technically needs one sample, mainly to prevent big brain time
+                //  when you run a batch with no samples
+                if (totalSample == 0) totalSample += 1;
+                
+                // this will crash the program if totalQC + totalSample is greater than the maximum
+                // which there shouldn't be a case where it is?
+                
+                // max of 50 because thats how many we can hold on a tray, if you can hold more,
+                //  good for you.
+                numberWheelDialog(totalQC + totalSample, 50, -1,-1, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
 //                numberWheelDialog(0, availableTubes, 0, 0, vNumWaterMDLs);
@@ -359,7 +373,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
                         numberWheelDialog(0, smallest, 2, 0, vNumShared);
                     } else {
-                        Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
+                        numberWheelDialog(0, availableTubes, 2, 0, vNumShared);
+//                         Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
