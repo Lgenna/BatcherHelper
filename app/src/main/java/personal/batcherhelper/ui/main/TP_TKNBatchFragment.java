@@ -103,14 +103,19 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         vNumTubesLeft = view.findViewById(R.id.numOfTubesLeft);
         vCurrentBatchSize = view.findViewById(R.id.currentBatchSizeNumber);
 
-        vCurrentBatchSize.setText(String.valueOf(batchLogic.getBatchSize()));
-
-        initData();
+        updateData();
         initRecyclerView();
 
         return view;
     }
-
+    
+    public void updateData() {
+        batchLogic.performLogic();
+        vCurrentBatchSize.setText(String.valueOf(batchLogic.getBatchSize()));
+        vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
+        initData();
+    }
+    
     private void itemAdder(String itemName, boolean isQC, int itemCount, int indexInArray) {
         int[] batchQC = batchLogic.getBatchQC();
         int[] batchSamples = batchLogic.getBatchSamples();
@@ -239,13 +244,10 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 default:
                     Log.e(TAG, "ERROR - Unknown sourceArray /( " + sourceArray + " /)");
             }
-
+            
             // perform logic and set the number of tubes left
-            batchLogic.performLogic();
-            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
-
             // grab the new data from batchSamples and batchQC and re-add it to the mBatchSamples ArrayList
-            initData();
+            updateData();
             // notify the recycler view that there is new data
             batchViewCustomAdapter.notifyDataSetChanged();
 
@@ -298,9 +300,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                             // then add the 7 curve points needed
                             batchLogic.setCurvePoints(true);
                             Log.i(TAG, "Set 7 curve points.");
-                            batchLogic.performLogic();
-                            initData();
-                            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
+                            updateData();
                         } else {
                             Log.w(TAG, "Not enough room for the 7 curve points needed.");
                             Toast.makeText(context, "Not enough available tubes", Toast.LENGTH_SHORT).show();
@@ -311,9 +311,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                         if (localBatchQC[2] > 0) {
                             Log.w(TAG, "Removed 7 curve points.");
                             batchLogic.setCurvePoints(false);
-                            batchLogic.performLogic();
-                            initData();
-                            vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
+                            updateData();
                         }
 
                     }
