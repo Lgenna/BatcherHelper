@@ -108,6 +108,17 @@ public class BatchLogic {
     public int getLCS() {
         return batchQC[3] + batchQC[7];
     }
+    
+    public void resetAllFields() {
+        for (int itemQC : this.batchQC) {
+            itemQC = 0;
+        }
+        for (int itemSample : this.batchSamples) {
+            itemSample = 0;
+        }
+        this.batchQC[0] = 3;
+        this.batchQC[1] = 2;
+    }
 
     /**
      * Prints the output of the batch in a squishy-human readable format.
