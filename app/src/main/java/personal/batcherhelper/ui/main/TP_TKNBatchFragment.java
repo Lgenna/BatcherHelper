@@ -300,6 +300,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                             Log.i(TAG, "Set 7 curve points.");
                             batchLogic.performLogic();
                             initData();
+                            // notify the recycler view that the dataset was changed
+                            batchViewCustomAdapter.notifyDataSetChanged();
                             vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
                         } else {
                             Log.w(TAG, "Not enough room for the 7 curve points needed.");
@@ -313,6 +315,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                             batchLogic.setCurvePoints(false);
                             batchLogic.performLogic();
                             initData();
+                            // notify the recycler view that the dataset was changed
+                            batchViewCustomAdapter.notifyDataSetChanged();
                             vNumTubesLeft.setText(String.valueOf(batchLogic.getAvailableTubes()));
                         }
 
