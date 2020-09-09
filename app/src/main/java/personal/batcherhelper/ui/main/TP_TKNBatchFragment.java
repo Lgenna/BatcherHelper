@@ -400,7 +400,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.numExtra:
                 if (availableTubesSet()) {
-                    numberWheelDialog(0, availableTubes, 5, 0, vNumExtra);
+                    numberWheelDialog(0, availableTubes + localBatchSamples[5], 5, 0, vNumExtra);
                 }
                 break;
             case R.id.resetAllFields:
