@@ -322,11 +322,27 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.numTubesAvailable:
-
-                // TODO "lock" this if any other user configurable value has been changed, this can
-                //  help prevent negative available tubes, it also sounds much easier said than done
-
-                numberWheelDialog(localBatchQC[0] + localBatchQC[1] + 1, 50, -1,-1, vNumTubesAvailable);
+                // add all samples and QC together and set that as the minimum value
+                int totalQC = 0;
+                int totalSample = 0;
+                for (int QC : localBatchQC) {
+                    totalQC += QC;
+                }
+                for (int sample : localBatchSamples) {
+                    totalSample += sample;
+                }
+               
+                // if there happens to be no samples, set the minimum to one higher than QC needed
+                //  because a batch technically needs one sample, mainly to prevent big brain time
+                //  when you run a batch with no samples
+                if (totalSample == 0) totalSample += 1;
+                
+                // this will crash the program if totalQC + totalSample is greater than the maximum
+                // which there shouldn't be a case where it is?
+                
+                // max of 50 because thats how many we can hold on a tray, if you can hold more,
+                //  good for you.
+                numberWheelDialog(totalQC + totalSample, 50, -1,-1, vNumTubesAvailable);
                 break;
             case R.id.numWaterMDLs:
 //                numberWheelDialog(0, availableTubes, 0, 0, vNumWaterMDLs);
@@ -355,7 +371,8 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
                         numberWheelDialog(0, smallest, 2, 0, vNumShared);
                     } else {
-                        Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
+                        numberWheelDialog(0, availableTubes, 2, 0, vNumShared);
+//                         Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
