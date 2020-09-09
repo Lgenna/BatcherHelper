@@ -258,7 +258,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             // dismiss the dialog
             dialog.dismiss();
         });
-        cancel.setOnClickListener(v -> {
+          cancel.setOnClickListener(v -> {
             calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_gray_underline));
             dialog.dismiss();
         });
@@ -302,7 +302,9 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                             // then add the 7 curve points needed
                             batchLogic.setCurvePoints(true);
                             Log.i(TAG, "Set 7 curve points.");
+                            
                             updateData();
+                            batchViewCustomAdapter.notifyDataSetChanged();
                         } else {
                             Log.w(TAG, "Not enough room for the 7 curve points needed.");
                             Toast.makeText(context, "Not enough available tubes", Toast.LENGTH_SHORT).show();
@@ -313,7 +315,9 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                         if (localBatchQC[2] > 0) {
                             Log.w(TAG, "Removed 7 curve points.");
                             batchLogic.setCurvePoints(false);
+
                             updateData();
+                            batchViewCustomAdapter.notifyDataSetChanged();
                         }
 
                     }
