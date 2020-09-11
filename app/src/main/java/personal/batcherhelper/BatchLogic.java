@@ -7,38 +7,15 @@ public class BatchLogic {
 
     private static final String TAG = "BatchLogic";
 
-    /**
-     * These public ints can be set anywhere within the program, however it is not friendly
-     *  towards general "for" loops or other general methods, therefore we edit the array
-     *  directly (even though the array was designed to be a final resting place for sample
-     *  amounts and the int's were temporary values used to check if they can fit before being
-     *  put into the array, but that's besides the point)
-     */
-
-    public int waterShared = 0;
-    public int waterMDL = 0;
-    public int waterPT = 0;
-    public int waterTP = 0;
-    public int waterTKN = 0;
-    public int waterExtra = 0;
-
-    public int soilShared = 0;
-    public int soilMDL = 0;
-    public int soilPT = 0;
-    public int soilTP = 0;
-    public int soilTKN = 0;
-    public int soilExtra = 0;
-
     public boolean isCurve = false;
     public int totalTubes = 0;
     private int availableTubes = 0;
 
-
-    public int[] batchSamples = new int[] {
-            waterMDL,               waterPT,                waterShared,
-            waterTP - waterShared,  waterTKN - waterShared, waterExtra,
-            soilMDL,                soilPT,                 soilShared,
-            soilTP - soilShared,    soilTKN - soilShared,   soilExtra};
+    public int[] batchSamples = new int[12];
+    // waterMDL,    waterPT,    waterShared, 
+    // waterTP,     waterTKN,   waterExtra,
+    // soilMDL,     soilPT,     soilShared, 
+    // soilTP,      SoilTKN,    soilExtra
 
     private int[] batchQC = new int[]{
             3, 2, 0, 0, 0,
@@ -61,24 +38,20 @@ public class BatchLogic {
         this.availableTubes = totalTubes;
     }
     
+    public int[] getBatchQC() {
+        return batchQC;
+    }
+    
     public int[] getBatchSamples() {
         return batchSamples;
     }
-
+    
     public void setBatchSamplesValue(int index, int givenValue) {
         this.batchSamples[index] = givenValue;
     }
 
-    public void setBatchSamples(int[] batchSamples) {
-        this.batchSamples = batchSamples;
-    }
-
     public int getBatchSize() {
         return totalTubes - availableTubes;
-    }
-
-    public int[] getBatchQC() {
-        return batchQC;
     }
 
     public int getAvailableTubes() {
@@ -104,10 +77,6 @@ public class BatchLogic {
             this.batchQC[2] = 0;
         }
     }
-
-    public int getLCS() {
-        return batchQC[3] + batchQC[7];
-    }
     
     public void resetAllFields() {
         for (int itemQC : this.batchQC) {
@@ -123,7 +92,7 @@ public class BatchLogic {
     /**
      * Prints the output of the batch in a squishy-human readable format.
      *
-     * Mainly for test purposes as it is designed to print only to the console
+     * Mainly for test purposes as it returns a string
      */
     private String batchPrinter() {
 
@@ -162,10 +131,8 @@ public class BatchLogic {
 
         int largest = tpAmount;
 
-        // multiply TKN by 2 because TKN needs another MS for every 10 samples, so double its weight
-        if (isMS) {
-            tknAmount *= 2;
-        }
+        // multiply TKN by 2 because TKN needs another MS for every 10 samples, so double its "weight"
+        if (isMS) tknAmount *= 2;
 
         if(tknAmount >= largest) largest = tknAmount;
 
@@ -209,38 +176,14 @@ public class BatchLogic {
 
     public void performLogic() {
 
-        // running total of added values
-//        int runningTotal = 0;
-
-        // local pre-calculated variables
-//        int waterTpMinusShared = batchSamples[3] - batchSamples[2];
-//        int waterTknMinusShared = batchSamples[4] - batchSamples[2];
-
-        // check to see if there is a curve needed
-//        if (isCurve) {
-//            batchQC[2] = 7;
-//        }
-
-        // finds MS and MSD needed for waters
-
-
-        int waterLCS = 0;
-        int soilLCS = 0;
-
-        // add LCS's for waters and soils if present
-        for (int i = 0; i < batchSamples.length; i++) {
-            if (i <= 5 && batchSamples[i] > 0) {
-                // any water samples get 2 LCS
-                waterLCS = 2;
-            } else if (batchSamples[i] > 0) {
-                // soils get 1 LCS
-                soilLCS = 1;
-            }
-        }
-
-        batchQC[3] = waterLCS + soilLCS;
-
-        // finds the total number of soils, used later
+        int generalLCS = 0;
+        // find genreal LCS's needed, soils are treated differently however, 
+        //  they also get added to generalLCS because of poor wording in the
+        //  SOP and we want to take things safe.
+        for (int element : batchSamples) if (element > 0) generalLCS = 2;
+        batchQC[3] = generalLCS;
+        
+        // finds the total number of soils (ex. MDL's, TKN samples), used later
         int totalSoils = 0;
         for (int i = 6; i < batchSamples.length; i++) {
             totalSoils = batchSamples[i];
@@ -248,8 +191,8 @@ public class BatchLogic {
 
         // get soil QC
         SoilQC returnedSoilQC = findSoilQC(totalSoils);
-//        int soilBlank = returnedSoilQC.getSoilBlank();
-//        int soilLCS = returnedSoilQC.getSoilLCS();
+        batchQC[6] = returnedSoilQC.getSoilBlank();
+        batchQC[7] = returnedSoilQC.getSoilLCS();
 
         // finds MS and MSD needed for soils
 //        int soilNeededMS = findExtraMS(soilTP, soilTKN); //  CHANGE TO ARRAY CALLS
