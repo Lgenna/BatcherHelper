@@ -25,10 +25,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import personal.batcherhelper.BatchItem;
-import personal.batcherhelper.BatchItemNames;
 import personal.batcherhelper.BatchLogic;
 import personal.batcherhelper.BatchViewCustomAdapter;
-import personal.batcherhelper.R;
 
 public class TP_TKNBatchFragment extends Fragment implements View.OnClickListener, NumberPicker.OnValueChangeListener{
 
@@ -47,11 +45,9 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     private String[] sBatchSamples = batchLogic.getBatchSamplesNames();
     private String[] sBatchQC = batchLogic.getBatchQCNames();
 
-    private boolean needsCurve;
-
-    private TextView vNumTubesAvailable, vNumExtra, vNumShared, vNumTP, vNumTKN,
-            vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs, vNumTubesLeft,
-            vCurrentBatchSize;
+    private TextView vNumTubesAvailable, vWaterMDL, vWaterPT, vWaterShared, vWaterTP,
+            vWaterTKN, vWaterExtra, vSoilMDL, vSoilPT, vSoilShared, vSoilTP, vSoilTKN, vSoilExtra, 
+            vTubesLeft, vCurrentBatchSize;
     private CheckBox vNeedsCurve;
     private ImageButton vResetAllFields;
 
@@ -78,27 +74,25 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_tp_tkn_batch, container, false);
-
-        batchLogic.performLogic();
         
         vNumTubesAvailable = view.findViewById(R.id.numTubesAvailable);
         vNumTubesAvailable.setOnClickListener(this); // calling onClick() method
-        vNumExtra = view.findViewById(R.id.numExtra);
-        vNumExtra.setOnClickListener(this);
-        vNumShared = view.findViewById(R.id.numShared);
-        vNumShared.setOnClickListener(this);
-        vNumTP = view.findViewById(R.id.numTP);
-        vNumTP.setOnClickListener(this);
-        vNumTKN = view.findViewById(R.id.numTKN);
-        vNumTKN.setOnClickListener(this);
-        vNumWaterPTs = view.findViewById(R.id.numWaterPTs);
-        vNumWaterPTs.setOnClickListener(this);
-        vNumSoilPTs = view.findViewById(R.id.numSoilPTs);
-        vNumSoilPTs.setOnClickListener(this);
-        vNumWaterMDLs = view.findViewById(R.id.numWaterMDLs);
-        vNumWaterMDLs.setOnClickListener(this);
-        vNumSoilMDLs = view.findViewById(R.id.numSoilMDLs);
-        vNumSoilMDLs.setOnClickListener(this);
+        vWaterExtra = view.findViewById(R.id.numExtra);
+        vWaterExtra.setOnClickListener(this);
+        vWaterShared = view.findViewById(R.id.numShared);
+        vWaterShared.setOnClickListener(this);
+        vWaterTP = view.findViewById(R.id.numTP);
+        vWaterTP.setOnClickListener(this);
+        vWaterTKN = view.findViewById(R.id.numTKN);
+        vWaterTKN.setOnClickListener(this);
+        vWaterPTs = view.findViewById(R.id.numWaterPTs);
+        vWaterPTs.setOnClickListener(this);
+        vSoilPTs = view.findViewById(R.id.numSoilPTs);
+        vSoilPTs.setOnClickListener(this);
+        vWaterMDLs = view.findViewById(R.id.numWaterMDLs);
+        vWaterMDLs.setOnClickListener(this);
+        vSoilMDLs = view.findViewById(R.id.numSoilMDLs);
+        vSoilMDLs.setOnClickListener(this);
         vNeedsCurve = view.findViewById(R.id.isCurveNeeded);
         vNeedsCurve.setOnClickListener(this);
         vNumTubesLeft = view.findViewById(R.id.numOfTubesLeft);
@@ -145,7 +139,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         int[] batchQC = batchLogic.getBatchQC();
         int[] batchSamples = batchLogic.getBatchSamples();
 
-        mBatchItems.clear(); // wipe before adding new data, easy solution to avoid duplicates
+        mBatchItems.clear(); // wipe before adding new data, crude solution to avoid duplicates
 
         // go through each type of item in the array
         for (int i = 0; i < batchQC.length; i++) {
@@ -197,7 +191,6 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         // change the background to a blue underline while the numberWheel is open, if moved to within the 
         //  OnClickListener it will only turn blue when the user taps on the view, instead of it being blue
         //  while the numberWheelDialog is open
-        
         calledView.setBackground(ContextCompat.getDrawable(context, R.drawable.light_blue_underline));
         dialog.setContentView(R.layout.fragment_number_picker);
         // add confirm and cancel buttons
@@ -224,7 +217,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         numberPicker.setWrapSelectorWheel(false);
         numberPicker.setOnValueChangedListener(this);
         confirm.setOnClickListener(v -> {
-
+            
             int confirmedValue = numberPicker.getValue();
             Log.i(TAG, "Received " + confirmedValue + " as the confirmed value.");
 
@@ -273,12 +266,12 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
 
     private boolean availableTubesSet() {
         if (vNumTubesAvailable.getText().equals("")) {
-            // was never set yet
-            Log.w(TAG, "AvailableTubes was not set yet, skipping onClick call");
+            // AvailableTubes was never set yet
+            Log.w(TAG, "AvailableTubes was not set, ignoring onClick call");
             Toast.makeText(context, "Set # tubes available first", Toast.LENGTH_SHORT).show();
             return false;
         }
-        // was set
+        // AvailableTubes was set
         return true;
     }
 
@@ -286,6 +279,9 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
 
+        // TODO update all fields in the layout and everywhere else needed to reflect the water / soil
+        //  requirements for each sample type
+        
         int[] localBatchSamples = batchLogic.getBatchSamples();
         int[] localBatchQC = batchLogic.getBatchQC();
         int availableTubes = batchLogic.getAvailableTubes();
@@ -408,8 +404,12 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.resetAllFields:
+                // reset all the arrays to default values (usually 0)
                 batchLogic.resetAllFields();
                 updateData();
+                
+                // TODO update each textview to reflect default values, maybe possible through a loop?
+                
                 break;
         }
     }
