@@ -3,15 +3,19 @@
     <string name="tab_text_1">TP/TKN</string>
     <string name="tab_text_2">Cyanide</string>
     <string name="tubes_available_question"># tubes available:</string>
-    <string name="num_water_mdls_question"># water MDL\'s:</string>
-    <string name="num_soil_mdls_question"># soil MDL\'s :</string>
-    <string name="num_shared_question"># shared samples</string>
-    <string name="num_tp_question"># TP samples:</string>
-    <string name="num_tkn_question"># TKN samples:</string>
-    <string name="curve_question">Does this batch need a curve?</string>
-    <string name="extra_tubes_needed_question">Extra tubes needed:</string>
-    <string name="num_water_pts_question"># water PT\'s:</string>
-    <string name="num_soil_pts_question"># soil PT\'s:</string>
+    <string name="water_mdl_question"># Water MDL\'s:</string>
+    <string name="water_pt_question"># water PT\'s:</string>
+    <string name="water_shared_question"># Waters Shared</string>
+    <string name="water_tp_question"># Water TP:</string>
+    <string name="water_tkn_question"># Water TKN:</string>
+    <string name="water_extra_question">Extra Waters Needed:</string>
+    <string name="soil_mdl_question"># Soil MDL\'s :</string>
+    <string name="soil_pt_question"># soil PT\'s:</string>
+    <string name="soil_shared_question"># Soil Shared</string>
+    <string name="soil_tp_question"># Soil TP:</string>
+    <string name="soil_tkn_question"># Soil TKN:</string>
+    <string name="soil_extra_question">Extra Soils Needed:</string>
+    <string name="curve_question">Is a curve needed?</string>
     <string name="current_batch_size">Current batch size: </string>
     <string name="num_tubes_left">Number of tubes left: </string>
     <string name="letter_of_the_day"> x </string>
@@ -19,4 +23,5 @@
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="initialZero">0</string>
+    <string name="tempText">##</string>
 </resources>

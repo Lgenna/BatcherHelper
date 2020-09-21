@@ -16,4 +16,8 @@
     <color name="ic_launcher_background">#b8b8b8</color>
     <color name="standard_button">#d7d7d7</color>
     <color name="grayed_out_button">#e7e7e7</color>
+    <color name="notQuitePurpleTime">#8B4FEA</color>
+    <color name="halfPastPurpleTime">#8642ED</color>
+    <color name="dayOldPurple">#9C6DE8</color>
+    <color name="darkishGray">#727272</color>
 </resources>

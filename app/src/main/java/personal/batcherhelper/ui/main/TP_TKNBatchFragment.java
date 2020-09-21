@@ -83,26 +83,26 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         
         vNumTubesAvailable = view.findViewById(R.id.numTubesAvailable);
         vNumTubesAvailable.setOnClickListener(this); // calling onClick() method
-        vNumExtra = view.findViewById(R.id.numExtra);
+        vNumExtra = view.findViewById(R.id.water_extra);
         vNumExtra.setOnClickListener(this);
-        vNumShared = view.findViewById(R.id.numShared);
+        vNumShared = view.findViewById(R.id.water_shared);
         vNumShared.setOnClickListener(this);
-        vNumTP = view.findViewById(R.id.numTP);
+        vNumTP = view.findViewById(R.id.water_tp);
         vNumTP.setOnClickListener(this);
-        vNumTKN = view.findViewById(R.id.numTKN);
+        vNumTKN = view.findViewById(R.id.water_tkn);
         vNumTKN.setOnClickListener(this);
-        vNumWaterPTs = view.findViewById(R.id.numWaterPTs);
+        vNumWaterPTs = view.findViewById(R.id.water_pt);
         vNumWaterPTs.setOnClickListener(this);
-        vNumSoilPTs = view.findViewById(R.id.numSoilPTs);
+        vNumSoilPTs = view.findViewById(R.id.soil_pt);
         vNumSoilPTs.setOnClickListener(this);
-        vNumWaterMDLs = view.findViewById(R.id.numWaterMDLs);
+        vNumWaterMDLs = view.findViewById(R.id.water_mdl);
         vNumWaterMDLs.setOnClickListener(this);
-        vNumSoilMDLs = view.findViewById(R.id.numSoilMDLs);
+        vNumSoilMDLs = view.findViewById(R.id.soil_mdl);
         vNumSoilMDLs.setOnClickListener(this);
         vNeedsCurve = view.findViewById(R.id.isCurveNeeded);
         vNeedsCurve.setOnClickListener(this);
-        vNumTubesLeft = view.findViewById(R.id.numOfTubesLeft);
-        vCurrentBatchSize = view.findViewById(R.id.currentBatchSizeNumber);
+        vNumTubesLeft = view.findViewById(R.id.tubes_left);
+        vCurrentBatchSize = view.findViewById(R.id.current_batch_size);
         vResetAllFields = view.findViewById(R.id.resetAllFields);
 
         updateData();
@@ -119,8 +119,10 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     }
     
     private void itemAdder(String itemName, boolean isQC, int itemCount, int indexInArray) {
-        int[] batchQC = batchLogic.getBatchQC();
-        int[] batchSamples = batchLogic.getBatchSamples();
+
+        //TODO should the user be able to manually X out items on the recycler view?
+        // until then, setting isQC to true for all entries.
+        isQC = true;
 
         BatchItem item = new BatchItem();
 
@@ -348,19 +350,19 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 //  good for you.
                 numberWheelDialog(totalQC + totalSample, 50, -1,-1, vNumTubesAvailable);
                 break;
-            case R.id.numWaterMDLs:
+            case R.id.water_mdl:
 //                numberWheelDialog(0, availableTubes, 0, 0, vNumWaterMDLs);
                 break;
-             case R.id.numSoilMDLs:
+             case R.id.soil_mdl:
 //                numberWheelDialog(0, 50, 999, vNumSoilMDLs);
                  break;
-            case R.id.numWaterPTs:
+            case R.id.water_pt:
 //                numberWheelDialog(0, availableTubes, 1, 0, vNumWaterPTs);
                 break;
-             case R.id.numSoilPTs:
+             case R.id.soil_pt:
 //                numberWheelDialog(0, 50, 999, vNumSoilPTs);
                  break;
-            case R.id.numShared:
+            case R.id.water_shared:
                 if (availableTubesSet()) {
                     // only allow the user to enter in a value IF they have both TP and TKN already
                     //  entered in, this helps reduce problems when generating the max number of
@@ -380,29 +382,29 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                     }
                 }
                 break;
-            case R.id.numTP:
+            case R.id.water_tp:
                 if (availableTubesSet()) {
                     maxAllowedSamples = localBatchSamples[3] + batchLogic.findMaxAllowedSample(availableTubes, true);
                     if (maxAllowedSamples > 0) {
                         Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
-                        numberWheelDialog(0, maxAllowedSamples, 3, 0, vNumTP);
+                        numberWheelDialog(localBatchSamples[2], maxAllowedSamples, 3, 0, vNumTP);
                     } else {
                         Log.i(TAG, "No new maximum for " + sBatchSamples[3] + " was found | 0 > " + maxAllowedSamples);
                     }
                 }
                 break;
-            case R.id.numTKN:
+            case R.id.water_tkn:
                 if (availableTubesSet()) {
                     maxAllowedSamples = localBatchSamples[4] + batchLogic.findMaxAllowedSample(availableTubes, false);
                     if (maxAllowedSamples > 0) {
                         Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
-                        numberWheelDialog(0, maxAllowedSamples, 4, 0, vNumTKN);
+                        numberWheelDialog(localBatchSamples[2], maxAllowedSamples, 4, 0, vNumTKN);
                     } else {
                         Log.i(TAG, "No new maximum for " + sBatchSamples[4] + " was found | 0 > " + maxAllowedSamples);
                     }
                 }
                 break;
-            case R.id.numExtra:
+            case R.id.water_extra:
                 if (availableTubesSet()) {
                     numberWheelDialog(0, availableTubes + localBatchSamples[5], 5, 0, vNumExtra);
                 }

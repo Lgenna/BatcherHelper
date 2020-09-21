@@ -14,226 +14,485 @@
         android:padding="8dp"
         tools:context=".ui.main.PlaceholderFragment">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/general_layout"
+            style="@style/purpleTime"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/tubes_available_question"
+            android:background="@drawable/light_gray_border"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/numTubesAvailable"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/general_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/num_water_mdls_question"
+            <LinearLayout
+                android:id="@+id/tubes_available_layout"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tubes_available_question"
+                    style="@style/purpleTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tubes_available_question"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/numTubesAvailable"
+                    style="@style/fakeTextBox"
+                    android:layout_width="75dp"
+                    android:layout_height="35dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/current_batch_size_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toStartOf="@+id/general_guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/isCurveNeeded">
+
+                <TextView
+                    android:id="@+id/current_batch_size_text"
+                    style="@style/purpleTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/current_batch_size" />
+
+                <TextView
+                    android:id="@+id/current_batch_size"
+                    style="@style/purpleTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/tempText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tubes_left_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/purpleTime"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/general_guideline"
+                app:layout_constraintTop_toTopOf="@+id/current_batch_size_layout">
+
+                <TextView
+                    android:id="@+id/tubes_left_text"
+                    style="@style/purpleTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/num_tubes_left" />
+
+                <TextView
+                    android:id="@+id/tubes_left"
+                    style="@style/purpleTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/tempText" />
+                
+                
+            </LinearLayout>
+
+
+            <ImageButton
+                android:id="@+id/resetAllFields"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_delete" />
+
+            <CheckBox
+                android:id="@+id/isCurveNeeded"
+                style="@style/purpleTime"
+                android:buttonTint="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/curve_question"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tubes_available_layout" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/water_layout"
+            style="@style/purpleTime"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/light_gray_border"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/numTubesAvailable" />
+            app:layout_constraintTop_toBottomOf="@+id/general_layout">
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/num_soil_mdls_question"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/numTubesAvailable" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/water_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
 
-        <TextView
-            android:id="@+id/numWaterMDLs"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintStart_toStartOf="@+id/textView2"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            <LinearLayout
+                android:id="@+id/water_layout_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toStartOf="@+id/water_guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/numSoilMDLs"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintStart_toStartOf="@+id/textView3"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                <LinearLayout
+                    android:id="@+id/water_pt_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/num_shared_question"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/numWaterPTs" />
+                    <TextView
+                        android:id="@+id/water_pt_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/water_pt_question" />
 
-        <TextView
-            android:id="@+id/numShared"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintStart_toStartOf="@+id/textView4"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                    <TextView
+                        android:id="@+id/water_pt"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
 
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/num_tp_question"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/numShared" />
+                </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/num_tkn_question"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/numShared" />
+                <LinearLayout
+                    android:id="@+id/water_shared_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-        <TextView
-            android:id="@+id/numTP"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintStart_toStartOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                    <TextView
+                        android:id="@+id/water_shared_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/water_shared_question" />
 
-        <TextView
-            android:id="@+id/numTKN"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintStart_toStartOf="@+id/textView6"
-            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+                    <TextView
+                        android:id="@+id/water_shared"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/water_tp_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/water_tp_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/water_tp_question" />
+
+                    <TextView
+                        android:id="@+id/water_tp"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/water_layout_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/water_guideline"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/water_mdl_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/water_mdl_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/water_mdl_question" />
+
+                    <TextView
+                        android:id="@+id/water_mdl"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/water_extra_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/water_extra_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/water_extra_question" />
+
+                    <TextView
+                        android:id="@+id/water_extra"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/water_tkn_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/water_tp_layout">
+
+                    <TextView
+                        android:id="@+id/water_tkn_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/water_tkn_question" />
+
+                    <TextView
+                        android:id="@+id/water_tkn"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/soil_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/light_gray_border"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/water_layout">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/soil_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <LinearLayout
+                android:id="@+id/soil_layout_left"
+                style="@style/purpleTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toStartOf="@+id/soil_guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/soil_pt_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/soil_pt_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/soil_pt_question" />
+
+                    <TextView
+                        android:id="@+id/soil_pt"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/soil_shared_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/soil_shared_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/soil_shared_question" />
+
+                    <TextView
+                        android:id="@+id/soil_shared"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/soil_tp_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/soil_tp_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/soil_tp_question" />
+
+                    <TextView
+                        android:id="@+id/soil_tp"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/soil_layout_right"
+                style="@style/purpleTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/soil_guideline"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/soil_mdl_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/soil_mdl_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/soil_mdl_question" />
+
+                    <TextView
+                        android:id="@+id/soil_mdl"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/soil_extra_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/soil_extra_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/soil_extra_question" />
+
+                    <TextView
+                        android:id="@+id/soil_extra"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/soil_tkn_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/soil_tp_layout">
+
+                    <TextView
+                        android:id="@+id/soil_tkn_question"
+                        style="@style/purpleTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/soil_tkn_question" />
+
+                    <TextView
+                        android:id="@+id/soil_tkn"
+                        style="@style/fakeTextBox"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/currentBatchView"
+            android:backgroundTint="@color/notQuitePurpleTime"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:background="@drawable/light_gray_border"
+            android:layout_marginTop="8dp"
             android:padding="8dp"
             android:scrollbars="vertical"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/isCurveNeeded" />
-
-        <TextView
-            android:id="@+id/textView7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/current_batch_size"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/currentBatchView" />
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/num_tubes_left"
-            app:layout_constraintTop_toBottomOf="@+id/currentBatchView"
-            app:layout_constraintEnd_toEndOf="@+id/numOfTubesLeft"
-            tools:layout_editor_absoluteX="212dp" />
-
-        <CheckBox
-            android:id="@+id/isCurveNeeded"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/curve_question"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/numTP" />
-
-        <TextView
-            android:id="@+id/textView9"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/num_water_pts_question"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/numWaterMDLs" />
-
-        <TextView
-            android:id="@+id/numWaterPTs"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintStart_toStartOf="@+id/textView9"
-            app:layout_constraintTop_toBottomOf="@+id/textView9" />
-
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/num_soil_pts_question"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/numSoilMDLs" />
-
-        <TextView
-            android:id="@+id/numSoilPTs"
-            style="@style/fakeTextBox"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView10"
-            app:layout_constraintTop_toBottomOf="@+id/textView10" />
-
-        <ImageButton
-            android:id="@+id/resetAllFields"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_menu_delete" />
-
-        <TextView
-            android:id="@+id/currentBatchSizeNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            app:layout_constraintStart_toEndOf="@+id/textView7"
-            app:layout_constraintTop_toTopOf="@+id/textView7" />
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/extra_tubes_needed_question"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView4" />
-
-        <TextView
-            android:id="@+id/numExtra"
-            android:layout_width="75dp"
-            android:layout_height="35dp"
-            style="@style/fakeTextBox"
-            app:layout_constraintEnd_toEndOf="@+id/textView11"
-            app:layout_constraintTop_toBottomOf="@+id/textView11" />
-
-        <TextView
-            android:id="@+id/numOfTubesLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView8" />
+            app:layout_constraintTop_toBottomOf="@+id/soil_layout" />
+        
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
