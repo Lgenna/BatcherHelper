@@ -79,12 +79,8 @@ public class BatchLogic {
     }
     
     public void resetAllFields() {
-        for (int itemQC : this.batchQC) {
-            itemQC = 0;
-        }
-        for (int itemSample : this.batchSamples) {
-            itemSample = 0;
-        }
+        Arrays.fill(this.batchQC, 0);
+        Arrays.fill(this.batchSamples, 0);
         this.batchQC[0] = 3;
         this.batchQC[1] = 2;
     }
