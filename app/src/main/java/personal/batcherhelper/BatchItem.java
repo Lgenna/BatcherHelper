@@ -3,7 +3,6 @@ package personal.batcherhelper;
 public class BatchItem {
 
     private String mItem;
-    private boolean mIsQC;
     private int mCount;
     private int mIndexInArray;
 
@@ -13,14 +12,6 @@ public class BatchItem {
 
     public void setmIndexInArray(int mIndexInArray) {
         this.mIndexInArray = mIndexInArray;
-    }
-
-    public boolean getmIsQC() {
-        return mIsQC;
-    }
-
-    public void setmIsQC(boolean mIsQC) {
-        this.mIsQC = mIsQC;
     }
 
     public String getmItem() {

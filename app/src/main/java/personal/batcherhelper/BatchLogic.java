@@ -8,7 +8,9 @@ public class BatchLogic {
     private static final String TAG = "BatchLogic";
 
     public boolean isCurve = false;
-    public int totalTubes = 0;
+    // 5 because there are always 3 blanks and 2 CCV's on each batch,
+    //  regardless of sample counts, which I guess includes 0 samples...
+    public int totalTubes = 5;
     private int availableTubes = 0;
 
     public int[] batchSamples = new int[12];
@@ -79,10 +81,10 @@ public class BatchLogic {
     }
     
     public void resetAllFields() {
-        Arrays.fill(this.batchQC, 0);
-        Arrays.fill(this.batchSamples, 0);
-        this.batchQC[0] = 3;
-        this.batchQC[1] = 2;
+        Arrays.fill(batchQC, 0);
+        Arrays.fill(batchSamples, 0);
+        batchQC[0] = 3;
+        batchQC[1] = 2;
     }
 
     /**

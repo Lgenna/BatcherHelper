@@ -5,18 +5,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.main.PlaceholderFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        tools:context=".ui.main.PlaceholderFragment">
+        android:padding="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/general_layout"
-            style="@style/purpleTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/light_gray_border"
@@ -42,7 +41,6 @@
 
                 <TextView
                     android:id="@+id/tubes_available_question"
-                    style="@style/purpleTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tubes_available_question"
@@ -68,7 +66,6 @@
 
                 <TextView
                     android:id="@+id/current_batch_size_text"
-                    style="@style/purpleTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
@@ -76,7 +73,6 @@
 
                 <TextView
                     android:id="@+id/current_batch_size"
-                    style="@style/purpleTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -88,14 +84,12 @@
                 android:id="@+id/tubes_left_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                style="@style/purpleTime"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/general_guideline"
                 app:layout_constraintTop_toTopOf="@+id/current_batch_size_layout">
 
                 <TextView
                     android:id="@+id/tubes_left_text"
-                    style="@style/purpleTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
@@ -103,7 +97,6 @@
 
                 <TextView
                     android:id="@+id/tubes_left"
-                    style="@style/purpleTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -124,8 +117,7 @@
 
             <CheckBox
                 android:id="@+id/isCurveNeeded"
-                style="@style/purpleTime"
-                android:buttonTint="@color/white"
+                android:textColor="@color/defaultTextColor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/curve_question"
@@ -137,7 +129,6 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/water_layout"
-            style="@style/purpleTime"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
@@ -170,7 +161,6 @@
 
                     <TextView
                         android:id="@+id/water_pt_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/water_pt_question" />
@@ -192,7 +182,6 @@
 
                     <TextView
                         android:id="@+id/water_shared_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/water_shared_question" />
@@ -214,7 +203,6 @@
 
                     <TextView
                         android:id="@+id/water_tp_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/water_tp_question" />
@@ -247,7 +235,6 @@
 
                     <TextView
                         android:id="@+id/water_mdl_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/water_mdl_question" />
@@ -269,7 +256,6 @@
 
                     <TextView
                         android:id="@+id/water_extra_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/water_extra_question" />
@@ -293,7 +279,6 @@
 
                     <TextView
                         android:id="@+id/water_tkn_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/water_tkn_question" />
@@ -325,7 +310,6 @@
 
             <LinearLayout
                 android:id="@+id/soil_layout_left"
-                style="@style/purpleTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -342,7 +326,6 @@
 
                     <TextView
                         android:id="@+id/soil_pt_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/soil_pt_question" />
@@ -364,7 +347,6 @@
 
                     <TextView
                         android:id="@+id/soil_shared_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/soil_shared_question" />
@@ -386,7 +368,6 @@
 
                     <TextView
                         android:id="@+id/soil_tp_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/soil_tp_question" />
@@ -403,7 +384,6 @@
 
             <LinearLayout
                 android:id="@+id/soil_layout_right"
-                style="@style/purpleTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -420,7 +400,6 @@
 
                     <TextView
                         android:id="@+id/soil_mdl_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/soil_mdl_question" />
@@ -442,7 +421,6 @@
 
                     <TextView
                         android:id="@+id/soil_extra_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/soil_extra_question" />
@@ -466,7 +444,6 @@
 
                     <TextView
                         android:id="@+id/soil_tkn_question"
-                        style="@style/purpleTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/soil_tkn_question" />
@@ -483,7 +460,6 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/currentBatchView"
-            android:backgroundTint="@color/notQuitePurpleTime"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="@drawable/light_gray_border"

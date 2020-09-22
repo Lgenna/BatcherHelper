@@ -20,4 +20,6 @@
     <color name="halfPastPurpleTime">#8642ED</color>
     <color name="dayOldPurple">#9C6DE8</color>
     <color name="darkishGray">#727272</color>
+    <color name="defaultTextColor">#6D6D6D</color>
+    <color name="phasedPurple">#996200EE</color>
 </resources>

@@ -21,11 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 import personal.batcherhelper.BatchItem;
-import personal.batcherhelper.BatchItemNames;
 import personal.batcherhelper.BatchLogic;
 import personal.batcherhelper.BatchViewCustomAdapter;
 import personal.batcherhelper.R;
@@ -47,11 +44,12 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
     private String[] sBatchSamples = batchLogic.getBatchSamplesNames();
     private String[] sBatchQC = batchLogic.getBatchQCNames();
 
-    private boolean needsCurve;
+    private TextView[] textViewList;
 
-    private TextView vNumTubesAvailable, vNumExtra, vNumShared, vNumTP, vNumTKN,
-            vNumWaterPTs, vNumSoilPTs, vNumWaterMDLs, vNumSoilMDLs, vNumTubesLeft,
-            vCurrentBatchSize;
+    private TextView    vNumTubesAvailable, vWaterMDL,  vWaterPT,   vWaterShared,   vWaterTP,   vWaterTKN,  vWaterExtra,
+                        vNumTubesLeft,      vSoilMDL,   vSoilPT,    vSoilShared,    vSoilTP,    vSoilTKN,   vSoilExtra,
+                        vCurrentBatchSize;
+
     private CheckBox vNeedsCurve;
     private ImageButton vResetAllFields;
 
@@ -83,27 +81,43 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         
         vNumTubesAvailable = view.findViewById(R.id.numTubesAvailable);
         vNumTubesAvailable.setOnClickListener(this); // calling onClick() method
-        vNumExtra = view.findViewById(R.id.water_extra);
-        vNumExtra.setOnClickListener(this);
-        vNumShared = view.findViewById(R.id.water_shared);
-        vNumShared.setOnClickListener(this);
-        vNumTP = view.findViewById(R.id.water_tp);
-        vNumTP.setOnClickListener(this);
-        vNumTKN = view.findViewById(R.id.water_tkn);
-        vNumTKN.setOnClickListener(this);
-        vNumWaterPTs = view.findViewById(R.id.water_pt);
-        vNumWaterPTs.setOnClickListener(this);
-        vNumSoilPTs = view.findViewById(R.id.soil_pt);
-        vNumSoilPTs.setOnClickListener(this);
-        vNumWaterMDLs = view.findViewById(R.id.water_mdl);
-        vNumWaterMDLs.setOnClickListener(this);
-        vNumSoilMDLs = view.findViewById(R.id.soil_mdl);
-        vNumSoilMDLs.setOnClickListener(this);
+
+        vWaterMDL = view.findViewById(R.id.water_mdl);
+        vWaterMDL.setOnClickListener(this);
+        vWaterPT = view.findViewById(R.id.water_pt);
+        vWaterPT.setOnClickListener(this);
+        vWaterShared = view.findViewById(R.id.water_shared);
+        vWaterShared.setOnClickListener(this);
+        vWaterTP = view.findViewById(R.id.water_tp);
+        vWaterTP.setOnClickListener(this);
+        vWaterTKN = view.findViewById(R.id.water_tkn);
+        vWaterTKN.setOnClickListener(this);
+        vWaterExtra = view.findViewById(R.id.water_extra);
+        vWaterExtra.setOnClickListener(this);
+
+        vSoilMDL = view.findViewById(R.id.soil_mdl);
+        vSoilMDL.setOnClickListener(this);
+        vSoilPT = view.findViewById(R.id.soil_pt);
+        vSoilPT.setOnClickListener(this);
+        vSoilShared = view.findViewById(R.id.soil_shared);
+        vSoilShared.setOnClickListener(this);
+        vSoilTP = view.findViewById(R.id.soil_tp);
+        vSoilTP.setOnClickListener(this);
+        vSoilTKN = view.findViewById(R.id.soil_tkn);
+        vSoilTKN.setOnClickListener(this);
+        vSoilExtra = view.findViewById(R.id.soil_extra);
+        vSoilExtra.setOnClickListener(this);
+
+
         vNeedsCurve = view.findViewById(R.id.isCurveNeeded);
         vNeedsCurve.setOnClickListener(this);
         vNumTubesLeft = view.findViewById(R.id.tubes_left);
         vCurrentBatchSize = view.findViewById(R.id.current_batch_size);
         vResetAllFields = view.findViewById(R.id.resetAllFields);
+        vResetAllFields.setOnClickListener(this);
+
+        textViewList = new TextView[] {vNumTubesAvailable,  vWaterMDL,  vWaterPT,   vWaterShared,   vWaterTP,   vWaterTKN,  vWaterExtra,
+                                                            vSoilMDL,   vSoilPT,    vSoilShared,    vSoilTP,    vSoilTKN,   vSoilExtra  };
 
         updateData();
         initRecyclerView();
@@ -118,16 +132,11 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         initData();
     }
     
-    private void itemAdder(String itemName, boolean isQC, int itemCount, int indexInArray) {
-
-        //TODO should the user be able to manually X out items on the recycler view?
-        // until then, setting isQC to true for all entries.
-        isQC = true;
+    private void itemAdder(String itemName, int itemCount, int indexInArray) {
 
         BatchItem item = new BatchItem();
 
         item.setmItem(itemName);
-        item.setmIsQC(isQC);
         item.setmCount(itemCount);
         item.setmIndexInArray(indexInArray);
 
@@ -153,7 +162,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         for (int i = 0; i < batchQC.length; i++) {
             // if its value is greater than 0, add it
             if (batchQC[i] > 0) {
-                itemAdder(sBatchQC[i], true, batchQC[i], i);
+                itemAdder(sBatchQC[i], batchQC[i], i);
 //                Log.i(TAG, "Added " + sBatchQC[i] + " to the ArrayList");
             }
         }
@@ -162,10 +171,10 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
             if (batchSamples[i] > 0) {
                 // special case to subtract the shared samples from TP and TKN
                 if (i == 6 || i == 7) {
-                    itemAdder(sBatchSamples[i], false, batchSamples[i] - batchSamples[5], i);
+                    itemAdder(sBatchSamples[i], batchSamples[i] - batchSamples[5], i);
 //                    Log.i(TAG, "Added " + sBatchSamples[i] + " to the ArrayList");
                 } else {
-                    itemAdder(sBatchSamples[i], false, batchSamples[i], i);
+                    itemAdder(sBatchSamples[i], batchSamples[i], i);
 //                  Log.i(TAG, "Added " + sBatchSamples[i] + " to the ArrayList");
                 }
             }
@@ -277,7 +286,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
         if (vNumTubesAvailable.getText().equals("")) {
             // was never set yet
             Log.w(TAG, "AvailableTubes was not set yet, skipping onClick call");
-            Toast.makeText(context, "Set # tubes available first", Toast.LENGTH_SHORT).show();
+            ShowToast(context, "Set # tubes available first");
             return false;
         }
         // was set
@@ -309,7 +318,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                             batchViewCustomAdapter.notifyDataSetChanged();
                         } else {
                             Log.w(TAG, "Not enough room for the 7 curve points needed.");
-                            Toast.makeText(context, "Not enough available tubes", Toast.LENGTH_SHORT).show();
+                            ShowToast(context, "Not enough available tubes");
                             vNeedsCurve.setChecked(false);
                         }
                     } else {
@@ -346,7 +355,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 // this will crash the program if totalQC + totalSample is greater than the maximum
                 // which there shouldn't be a case where it is?
                 
-                // max of 50 because thats how many we can hold on a tray, if you can hold more,
+                // max of 50 because that's how many we can hold on a tray, if you can hold more,
                 //  good for you.
                 numberWheelDialog(totalQC + totalSample, 50, -1,-1, vNumTubesAvailable);
                 break;
@@ -375,19 +384,22 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                             smallest = localBatchSamples[4];
                         }
 
-                        numberWheelDialog(0, smallest, 2, 0, vNumShared);
+                        numberWheelDialog(0, smallest, 2, 0, vWaterShared);
                     } else {
-                        numberWheelDialog(0, availableTubes, 2, 0, vNumShared);
-//                         Toast.makeText(context, "Add TP & TKN before shared values", Toast.LENGTH_SHORT).show();
+                        numberWheelDialog(0, availableTubes, 2, 0, vWaterShared);
                     }
                 }
                 break;
             case R.id.water_tp:
+
+                // TODO onClickListener doesn't do anything if min == max (if 0 == 0) when clicked on
+                //  make it toast or present some useful information
+
                 if (availableTubesSet()) {
                     maxAllowedSamples = localBatchSamples[3] + batchLogic.findMaxAllowedSample(availableTubes, true);
                     if (maxAllowedSamples > 0) {
                         Log.i(TAG, "New maximum for " + sBatchSamples[3] + " is " + maxAllowedSamples);
-                        numberWheelDialog(localBatchSamples[2], maxAllowedSamples, 3, 0, vNumTP);
+                        numberWheelDialog(localBatchSamples[2], maxAllowedSamples, 3, 0, vWaterTP);
                     } else {
                         Log.i(TAG, "No new maximum for " + sBatchSamples[3] + " was found | 0 > " + maxAllowedSamples);
                     }
@@ -398,7 +410,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                     maxAllowedSamples = localBatchSamples[4] + batchLogic.findMaxAllowedSample(availableTubes, false);
                     if (maxAllowedSamples > 0) {
                         Log.i(TAG, "New maximum for " + sBatchSamples[4] + " is " + maxAllowedSamples);
-                        numberWheelDialog(localBatchSamples[2], maxAllowedSamples, 4, 0, vNumTKN);
+                        numberWheelDialog(localBatchSamples[2], maxAllowedSamples, 4, 0, vWaterTKN);
                     } else {
                         Log.i(TAG, "No new maximum for " + sBatchSamples[4] + " was found | 0 > " + maxAllowedSamples);
                     }
@@ -406,13 +418,33 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.water_extra:
                 if (availableTubesSet()) {
-                    numberWheelDialog(0, availableTubes + localBatchSamples[5], 5, 0, vNumExtra);
+                    numberWheelDialog(0, availableTubes + localBatchSamples[5], 5, 0, vWaterExtra);
                 }
                 break;
             case R.id.resetAllFields:
+                ShowToast(context, "All fields reset");
+                Log.i(TAG, "Resetting all fields");
                 batchLogic.resetAllFields();
+                mBatchItems.clear();
+                batchViewCustomAdapter.notifyDataSetChanged();
                 updateData();
+                // Now time for the not-so-fun part of updating each text view
+                //  ... so we make it fun by throwing it through a loop!
+                for (TextView item : textViewList) {
+                    item.setText("");
+                }
+                break;
+            default:
+                Log.i(TAG, "Unknown button pressed: " + view.getId());
                 break;
         }
+    }
+    public void ShowToast(Context context, String info) {
+        Toast toast = Toast.makeText(context, info, Toast.LENGTH_SHORT);
+        View toastView = toast.getView();
+        TextView toastText = toastView.findViewById(android.R.id.message);
+        toastText.setTextColor(ContextCompat.getColor(context, R.color.white));
+        toastView.setBackgroundResource(R.drawable.toast_item_border);
+        toast.show();
     }
 }

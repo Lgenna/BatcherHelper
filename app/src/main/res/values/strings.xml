@@ -5,13 +5,13 @@
     <string name="tubes_available_question"># tubes available:</string>
     <string name="water_mdl_question"># Water MDL\'s:</string>
     <string name="water_pt_question"># water PT\'s:</string>
-    <string name="water_shared_question"># Waters Shared</string>
+    <string name="water_shared_question"># Waters Shared:</string>
     <string name="water_tp_question"># Water TP:</string>
     <string name="water_tkn_question"># Water TKN:</string>
     <string name="water_extra_question">Extra Waters Needed:</string>
     <string name="soil_mdl_question"># Soil MDL\'s :</string>
     <string name="soil_pt_question"># soil PT\'s:</string>
-    <string name="soil_shared_question"># Soil Shared</string>
+    <string name="soil_shared_question"># Soil Shared:</string>
     <string name="soil_tp_question"># Soil TP:</string>
     <string name="soil_tkn_question"># Soil TKN:</string>
     <string name="soil_extra_question">Extra Soils Needed:</string>
@@ -22,6 +22,6 @@
     <string name="sample_text">Sample Text</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <string name="initialZero">0</string>
+    <string name="number_of_the_day">0</string>
     <string name="tempText">##</string>
 </resources>

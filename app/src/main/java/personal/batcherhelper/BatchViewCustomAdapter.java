@@ -34,24 +34,6 @@ public class BatchViewCustomAdapter extends RecyclerView.Adapter<BatchViewCustom
     public void onBindViewHolder(CustomViewHolder viewHolder, final int position) {
         viewHolder.batchItemCount.setText(String.valueOf(mBatchItems.get(position).getmCount()));
         viewHolder.batchItem.setText(mBatchItems.get(position).getmItem());
-        if (mBatchItems.get(position).getmIsQC()) {
-            // don't draw the button when its qc, the user should not be able to remove qc items, only the system
-            viewHolder.removeItem.setVisibility(View.INVISIBLE);
-            viewHolder.removeItem.setEnabled(false);
-        }
-        viewHolder.removeItem.setOnClickListener(v -> {
-
-            System.out.println("removing position :" + position);
-
-            notifyItemRemoved(position);
-
-            mBatchItems.remove(position);
-
-            notifyItemRangeChanged(position, getItemCount());
-            
-            // Objects.requireNonNull(getActivity()).runOnUiThread(() -> getBatchSize());
-
-        });
     }
 
 
@@ -64,14 +46,12 @@ public class BatchViewCustomAdapter extends RecyclerView.Adapter<BatchViewCustom
 
         private TextView batchItemCount;
         private TextView batchItem;
-        private ImageButton removeItem;
 
         public CustomViewHolder(View itemView) {
             super(itemView);
 
             batchItemCount = itemView.findViewById(R.id.batchItemCount);
             batchItem = itemView.findViewById(R.id.batchItem);
-            removeItem = itemView.findViewById(R.id.remove_item);
         }
     }
 }
