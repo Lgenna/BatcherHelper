@@ -425,6 +425,7 @@ public class TP_TKNBatchFragment extends Fragment implements View.OnClickListene
                 ShowToast(context, "All fields reset");
                 Log.i(TAG, "Resetting all fields");
                 batchLogic.resetAllFields();
+                batchLogic.setTotalTubes(0);
                 mBatchItems.clear();
                 batchViewCustomAdapter.notifyDataSetChanged();
                 updateData();
