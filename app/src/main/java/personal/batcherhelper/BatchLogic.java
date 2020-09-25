@@ -17,7 +17,7 @@ public class BatchLogic {
     // waterMDL,    waterPT,    waterShared, 
     // waterTP,     waterTKN,   waterExtra,
     // soilMDL,     soilPT,     soilShared, 
-    // soilTP,      SoilTKN,    soilExtra
+    // soilTP,      soilTKN,    soilExtra
 
     private int[] batchQC = new int[]{
             3, 2, 0, 0, 0,
@@ -168,79 +168,47 @@ public class BatchLogic {
         return soilSample;
     }
 
-    /**
-     Adds everything together before finalizing just as a precautionary measure
-     */
+    public void QCMinusAvailableTubes() {
 
-    public void performLogic() {
-
+        int updatedAvailableTubes = totalTubes;
         int generalLCS = 0;
-        // find genreal LCS's needed, soils are treated differently however, 
-        //  they also get added to generalLCS because of poor wording in the
-        //  SOP and we want to take things safe.
+        int totalSoils = 0;
+        
+        // find genreal LCS's needed and even though soils are treated differently
+        //  we're also including them in generalLCS, this is because of poor wording 
+        //  in the SOP and we want to take things safe.
         for (int element : batchSamples) if (element > 0) generalLCS = 2;
         batchQC[3] = generalLCS;
-        
+      
+        // find MS and MSD for waters
+        batchQC[4] = findNeededSpikes(batchSamples[3], batchSamples[4], true);
+        batchQC[5] = findNeededSpikes(batchSamples[3], batchSamples[4], false);
+      
         // finds the total number of soils (ex. MDL's, TKN samples), used later
-        int totalSoils = 0;
         for (int i = 6; i < batchSamples.length; i++) {
             totalSoils = batchSamples[i];
         }
-
-        // get soil QC
+        
         SoilQC returnedSoilQC = findSoilQC(totalSoils);
         batchQC[6] = returnedSoilQC.getSoilBlank();
         batchQC[7] = returnedSoilQC.getSoilLCS();
 
-        // finds MS and MSD needed for soils
-//        int soilNeededMS = findExtraMS(soilTP, soilTKN); //  CHANGE TO ARRAY CALLS
-//        int soilNeededMSD = findExtraMSD(soilTP, soilTKN);//  CHANGE TO ARRAY CALLS
+        // find MS and MSD for soils
+        batchQC[8] = findNeededSpikes(batchSamples[9], batchSamples[10], true);
+        batchQC[9] = findNeededSpikes(batchSamples[9], batchSamples[10], false);
 
-        // add up everything in the batchQC array
-//        for (int element : batchQC) {
-//            runningTotal += element;
-//        }
+        for (int value : batchQC) {
+            updatedAvailableTubes -= value;
+        }
 
+        for (int batchSample : batchSamples) {
+            updatedAvailableTubes -= batchSample;
+        }
 
-        // add the rest of the computed values
-//        runningTotal += waterTpMinusShared + waterTknMinusShared;
-//        runningTotal += batchSamples[2]; // waterShared
-//        runningTotal += curvePoints;
-//        runningTotal += waterLCS;
-//        runningTotal += (waterNeededMS + waterNeededMSD);
-//        runningTotal += (soilBlank + soilLCS);
-//        runningTotal += (soilNeededMS + soilNeededMSD);
+        updatedAvailableTubes += (batchSamples[2] * 2); // waterShared
+        updatedAvailableTubes += (batchSamples[8] * 2); // soilShared
 
-        // now check to see if all of that is greater than 0, otherwise something went wrong and
-        // there are now negative tubes available
-//        if ((totalTubes - runningTotal) >= 0) {
-
-            int updatedAvailableTubes = totalTubes;
-
-            batchQC[4] = findNeededSpikes(batchSamples[3], batchSamples[4], true);
-            batchQC[5] = findNeededSpikes(batchSamples[3], batchSamples[4], false);
-
-            for (int value : batchQC) {
-                updatedAvailableTubes -= value;
-            }
-
-            for (int batchSample : batchSamples) {
-                updatedAvailableTubes -= batchSample;
-            }
-
-            updatedAvailableTubes += (batchSamples[2] * 2); // waterShared
-            updatedAvailableTubes += (batchSamples[8] * 2); // soilShared
-
-            availableTubes = updatedAvailableTubes;
-
-//            setAvailableTubes(availableTubes);
-
-//            return availableTubes;
-
-//        } else {
-//            Log.i(TAG, "Not enough room | Need : " + runningTotal + " > Have : " + newAvailableTubes);
-////            return -999;
-
+        availableTubes = updatedAvailableTubes;
     }
 
     /**
